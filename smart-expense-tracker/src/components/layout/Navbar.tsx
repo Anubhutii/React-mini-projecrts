@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../context/ThemeContext";
 
 import {
   FiMoon,
@@ -15,9 +17,10 @@ const Navbar = ({
   onLoginClick,
 }: NavbarProps) => {
 
-  const [darkMode, setDarkMode] = useState(true);
-
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const darkMode = theme === "dark";
+  const navigate = useNavigate();
 
   return (
     <nav
@@ -27,9 +30,11 @@ const Navbar = ({
         left-0
         w-full
         z-50
-        bg-white/10
+        dark:bg-white/10
+        bg-white/60
         border-b
-        border-gray-600/20
+        dark:border-gray-600/20
+        border-gray-200
         backdrop-blur-lg
       "
     >
@@ -68,7 +73,8 @@ const Navbar = ({
           onClick={() => setMenuOpen(!menuOpen)}
           className="
             md:hidden
-            text-white
+            dark:text-white
+            text-gray-800
             text-2xl
           "
         >
@@ -82,7 +88,8 @@ const Navbar = ({
             top-16
             left-0
             w-full
-            bg-black/90
+            dark:bg-black/90
+            bg-white/95
             flex
             flex-col
             items-center
@@ -107,13 +114,16 @@ const Navbar = ({
 
           {/* Dashboard */}
           <button
+            onClick={() => navigate("/")}
             className="
               relative
-              text-white
+              dark:text-white
+              text-gray-800
               text-sm
               font-medium
               transition-all
               duration-300
+              cursor-pointer
 
               after:content-['']
               after:absolute
@@ -133,13 +143,16 @@ const Navbar = ({
 
           {/* Reports */}
           <button
+            onClick={() => navigate("/reports")}
             className="
               relative
-              text-white
+              dark:text-white
+              text-gray-800
               text-sm
               font-medium
               transition-all
               duration-300
+              cursor-pointer
 
               after:content-['']
               after:absolute
@@ -159,13 +172,16 @@ const Navbar = ({
 
           {/* Analytics */}
           <button
+            onClick={() => navigate("/analytics")}
             className="
               relative
-              text-white
+              dark:text-white
+              text-gray-800
               text-sm
               font-medium
               transition-all
               duration-300
+              cursor-pointer
 
               after:content-['']
               after:absolute
@@ -230,7 +246,7 @@ const Navbar = ({
 
             {/* Sun Button */}
             <button
-              onClick={() => setDarkMode(false)}
+              onClick={() => setTheme("light")}
               className="
                 relative
                 z-10
@@ -252,7 +268,7 @@ const Navbar = ({
 
             {/* Moon Button */}
             <button
-              onClick={() => setDarkMode(true)}
+              onClick={() => setTheme("dark")}
               className="
                 relative
                 z-10
@@ -305,8 +321,10 @@ const Navbar = ({
                 items-center
                 justify-center
                 w-full
-                bg-black
-                text-white
+                dark:bg-black
+                bg-white
+                dark:text-white
+                text-gray-800
                 py-2
                 rounded-full
                 font-medium

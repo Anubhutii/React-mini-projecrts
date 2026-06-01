@@ -1,33 +1,8 @@
-import { useState } from "react";
-
-import Navbar from "./components/layout/Navbar";
-
-import LoginModal from "./components/layout/LoginModal";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
 
 function App() {
-
-  const [openLogin, setOpenLogin] = useState(false);
-
-  return (
-    <div
-      className="
-        min-h-screen
-        bg-gradient-to-br
-        from-black
-        via-gray-900
-        to-gray-800
-      "
-    >
-
-      <Navbar onLoginClick={() => setOpenLogin(true)} />
-
-      <LoginModal
-        open={openLogin}
-        onClose={() => setOpenLogin(false)}
-      />
-
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

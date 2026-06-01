@@ -1,5 +1,20 @@
 const Analytics = () => {
-  return <h1>Analytics Page</h1>;
+  return (
+    <div className="space-y-6 transition-all duration-300">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold dark:text-white text-gray-800 tracking-tight">
+          Analytics
+        </h1>
+      </div>
+      
+      <div className="p-6 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-gray-200/80 shadow-sm">
+        <p className="text-sm dark:text-gray-400 text-gray-500 font-medium">Expense Category Analytics</p>
+        <p className="dark:text-gray-300 text-gray-600 mt-2">
+          Analytical insights will appear here once you add transactions.
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Analytics;
