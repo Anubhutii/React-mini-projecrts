@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../context/ThemeContext";
 
 import {
-  FiMoon,
-  FiSun,
   FiMenu,
   FiX,
 } from "react-icons/fi";
@@ -18,8 +15,6 @@ const Navbar = ({
 }: NavbarProps) => {
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const darkMode = theme === "dark";
   const navigate = useNavigate();
 
   return (
@@ -88,8 +83,6 @@ const Navbar = ({
             top-16
             left-0
             w-full
-            dark:bg-black/90
-            bg-white/95
             flex
             flex-col
             items-center
@@ -138,7 +131,7 @@ const Navbar = ({
               hover:after:w-full
             "
           >
-            Dashboard
+            Home
           </button>
 
           {/* Reports */}
@@ -198,97 +191,69 @@ const Navbar = ({
           >
             Analytics
           </button>
+          {/* Contact */}
+          
+          <button
+            onClick={() => navigate("/analytics")}
+            className="
+              relative
+              dark:text-white
+              text-gray-800
+              text-sm
+              font-medium
+              transition-all
+              duration-300
+              cursor-pointer
+
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-1
+              after:w-0
+              after:h-[2px]
+              after:bg-orange-400
+              after:transition-all
+              after:duration-300
+
+              hover:after:w-full
+            "
+          >
+            Contact
+          </button>
+
+          {/* Dashboard Link */}
+          <button
+            onClick={() => navigate("/")}
+            className="
+              relative
+              dark:text-white
+              text-gray-800
+              text-sm
+              font-medium
+              transition-all
+              duration-300
+              cursor-pointer
+
+              after:content-['']
+              after:absolute
+              after:left-0
+              after:-bottom-1
+              after:w-0
+              after:h-[2px]
+              after:bg-orange-400
+              after:transition-all
+              after:duration-300
+
+              hover:after:w-full
+            "
+          >
+            Dashboard
+          </button>
 
         </div>
 
         {/* Right Side */}
-        <div className="hidden md:flex items-center gap-4">
-
-          {/* Theme Toggle */}
-          <div
-            className={`
-              relative
-              flex
-              items-center
-              w-24
-              h-12
-              rounded-full
-              p-1
-              transition-all
-              duration-300
-
-              ${
-                darkMode
-                  ? "bg-[#0B1020]"
-                  : "bg-gray-200"
-              }
-            `}
-          >
-
-            {/* Sliding Circle */}
-            <div
-              className={`
-                absolute
-                top-1
-                w-10
-                h-10
-                rounded-full
-                transition-all
-                duration-300
-
-                ${
-                  darkMode
-                    ? "translate-x-12 bg-[#2B3560]"
-                    : "translate-x-0 bg-white"
-                }
-              `}
-            />
-
-            {/* Sun Button */}
-            <button
-              onClick={() => setTheme("light")}
-              className="
-                relative
-                z-10
-                flex-1
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <FiSun
-                size={20}
-                className={
-                  darkMode
-                    ? "text-gray-400"
-                    : "text-black"
-                }
-              />
-            </button>
-
-            {/* Moon Button */}
-            <button
-              onClick={() => setTheme("dark")}
-              className="
-                relative
-                z-10
-                flex-1
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <FiMoon
-                size={20}
-                className={
-                  darkMode
-                    ? "text-white"
-                    : "text-gray-400"
-                }
-              />
-            </button>
-
-          </div>
+        <div className="hidden md:flex items-center gap-6">
 
           {/* Login Button */}
           <button
