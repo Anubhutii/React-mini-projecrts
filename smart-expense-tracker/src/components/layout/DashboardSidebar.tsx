@@ -1,13 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { getExpenses } from "../../services/api";
 
-const DashboardSidebar = () => {
+type Expense = { id?: string; title: string; amount: number; category: string; subCategory?: string; date?: string };
+
+interface DashboardSidebarProps {
+  expenses?: Expense[];
+}
+
+const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [searchParams] = useSearchParams();
   const dateParam = searchParams.get("date");
   const selectedDate = dateParam ? new Date(dateParam) : null;
+
+  // Local expenses for pages where prop is not passed (Analytics, Reports, etc.)
+  const [localExpenses, setLocalExpenses] = useState<Expense[]>([]);
+
+  useEffect(() => {
+    if (!expensesProp) {
+      const fetchLocal = async () => {
+        try {
+          const data = await getExpenses();
+          if (Array.isArray(data)) {
+            setLocalExpenses(data);
+          }
+        } catch (err) {
+          console.error("Sidebar local fetch error:", err);
+        }
+      };
+      fetchLocal();
+    }
+  }, [expensesProp]);
+
+  const expenses = expensesProp || localExpenses;
+
+  // Build a Set of dates with expenses (format: YYYY-MM-DD local timezone)
+  const activeDates = new Set(
+    expenses
+      .map((exp) => {
+        if (!exp.date) return null;
+        const d = new Date(exp.date);
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      })
+      .filter(Boolean)
+  );
 
   // Calendar State
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -115,6 +154,8 @@ const DashboardSidebar = () => {
               todayStart.setHours(0, 0, 0, 0);
               const isFuture = cellDate > todayStart;
 
+              const hasExpense = activeDates.has(`${year}-${month}-${day}`);
+
               return (
                 <button
                   key={day}
@@ -130,7 +171,11 @@ const DashboardSidebar = () => {
                       : isSelected
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold shadow-md shadow-purple-500/20 scale-105 cursor-pointer"
                       : isToday
-                      ? "border border-purple-500 text-purple-400 font-semibold cursor-pointer"
+                      ? hasExpense
+                        ? "bg-gradient-to-br from-purple-600/40 to-blue-600/40 text-purple-200 border border-purple-500 font-semibold cursor-pointer"
+                        : "border border-purple-500 text-purple-400 font-semibold cursor-pointer"
+                      : hasExpense
+                      ? "bg-gradient-to-br from-purple-600/20 to-blue-600/20 text-purple-300 border border-purple-500/20 font-medium hover:bg-white/10 cursor-pointer"
                       : "hover:bg-white/10 text-white/70 hover:text-white cursor-pointer"
                   }`}
                 >

@@ -218,7 +218,7 @@ const getCategoryColor = (cat: string) => {
       <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
 
         {/* SIDEBAR */}
-        <DashboardSidebar />
+        <DashboardSidebar expenses={expenses} />
 
         {/* MAIN */}
         <div className="flex-1 px-4 py-4 max-w-6xl mx-auto text-[14px]">
