@@ -134,63 +134,7 @@ const Navbar = ({
             Home
           </button>
 
-          {/* Reports */}
-          <button
-            onClick={() => navigate("/reports")}
-            className="
-              relative
-              dark:text-white
-              text-gray-800
-              text-sm
-              font-medium
-              transition-all
-              duration-300
-              cursor-pointer
 
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-1
-              after:w-0
-              after:h-[2px]
-              after:bg-orange-400
-              after:transition-all
-              after:duration-300
-
-              hover:after:w-full
-            "
-          >
-            Reports
-          </button>
-
-          {/* Analytics */}
-          <button
-            onClick={() => navigate("/analytics")}
-            className="
-              relative
-              dark:text-white
-              text-gray-800
-              text-sm
-              font-medium
-              transition-all
-              duration-300
-              cursor-pointer
-
-              after:content-['']
-              after:absolute
-              after:left-0
-              after:-bottom-1
-              after:w-0
-              after:h-[2px]
-              after:bg-orange-400
-              after:transition-all
-              after:duration-300
-
-              hover:after:w-full
-            "
-          >
-            Analytics
-          </button>
           {/* Contact */}
           
           <button
@@ -223,7 +167,7 @@ const Navbar = ({
 
           {/* Dashboard Link */}
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="
               relative
               dark:text-white

@@ -1,0 +1,148 @@
+import { useState } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+
+const DashboardSidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const selectedDate = dateParam ? new Date(dateParam) : null;
+
+  // Calendar State
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const startDay = new Date(year, month, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1));
+  };
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const menuItems = [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Analytics", path: "/analytics" },
+    { name: "Reports", path: "/reports" },
+  ];
+
+  return (
+    <div className="w-56 bg-[#0b1220]/80 border-r border-white/10 p-5 flex flex-col justify-between">
+      <div>
+        <h1 className="text-md font-semibold mb-6 text-white">💼 ExpenseAI</h1>
+
+        <div className="space-y-2 text-sm">
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.name}
+                onClick={() => navigate(item.path)}
+                className={`w-full text-left px-3 py-2 rounded-md transition duration-200 cursor-pointer ${
+                  isActive
+                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium shadow-sm"
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {item.name}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* MINI CALENDAR */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <div className="flex justify-between items-center mb-3">
+            <button
+              onClick={handlePrevMonth}
+              className="p-1 hover:bg-white/10 rounded-md transition text-white/60 hover:text-white cursor-pointer"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-xs font-semibold text-white/90">
+              {monthNames[month]} {year}
+            </span>
+            <button
+              onClick={handleNextMonth}
+              className="p-1 hover:bg-white/10 rounded-md transition text-white/60 hover:text-white cursor-pointer"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-7 gap-y-1 text-center text-[10px] text-white/40 font-semibold mb-2">
+            <span>S</span>
+            <span>M</span>
+            <span>T</span>
+            <span>W</span>
+            <span>T</span>
+            <span>F</span>
+            <span>S</span>
+          </div>
+
+          <div className="grid grid-cols-7 gap-x-1 gap-y-1 text-center text-xs">
+            {Array.from({ length: startDay }).map((_, i) => (
+              <span key={`empty-${i}`} className="h-6 w-6" />
+            ))}
+            {Array.from({ length: totalDays }).map((_, i) => {
+              const day = i + 1;
+              const isToday =
+                day === new Date().getDate() &&
+                month === new Date().getMonth() &&
+                year === new Date().getFullYear();
+              const isSelected = !!(selectedDate &&
+                day === selectedDate.getDate() &&
+                month === selectedDate.getMonth() &&
+                year === selectedDate.getFullYear());
+
+              const cellDate = new Date(year, month, day);
+              const todayStart = new Date();
+              todayStart.setHours(0, 0, 0, 0);
+              const isFuture = cellDate > todayStart;
+
+              return (
+                <button
+                  key={day}
+                  disabled={isFuture}
+                  onClick={() => {
+                    const monthStr = String(month + 1).padStart(2, '0');
+                    const dayStr = String(day).padStart(2, '0');
+                    navigate(`/dashboard?date=${year}-${monthStr}-${dayStr}`);
+                  }}
+                  className={`h-6 w-6 flex items-center justify-center rounded-full mx-auto transition-all duration-200 ${
+                    isFuture
+                      ? "text-white/20 pointer-events-none"
+                      : isSelected
+                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold shadow-md shadow-purple-500/20 scale-105 cursor-pointer"
+                      : isToday
+                      ? "border border-purple-500 text-purple-400 font-semibold cursor-pointer"
+                      : "hover:bg-white/10 text-white/70 hover:text-white cursor-pointer"
+                  }`}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardSidebar;

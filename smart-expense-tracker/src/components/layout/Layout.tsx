@@ -24,7 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
       "
     >
       <Navbar onLoginClick={() => setOpenLogin(true)} />
-      <main className="pt-24 px-6 max-w-7xl mx-auto">
+      <main className="pt-14 ">
         {children}
       </main>
       <LoginModal

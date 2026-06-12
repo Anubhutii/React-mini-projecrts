@@ -1,5 +1,3 @@
-import React from "react";
-
 const Features = () => {
   const features = [
     {
@@ -45,13 +43,6 @@ const Features = () => {
     { no: "02", title: "Track Spending", desc: "Monitor where your money goes." },
     { no: "03", title: "Get Insights", desc: "Understand your habits clearly." },
     { no: "04", title: "Improve Budget", desc: "Control spending & save more." },
-  ];
-
-  const users = [
-    { icon: "🎓", title: "Students", desc: "Manage pocket money easily." },
-    { icon: "💼", title: "Professionals", desc: "Track salary & expenses." },
-    { icon: "🏠", title: "Living Away", desc: "Handle rent & daily costs." },
-    { icon: "💸", title: "Budget Planners", desc: "Stay within your limits." },
   ];
 
   return (
@@ -100,7 +91,7 @@ const Features = () => {
       </section>
 
       {/* HOW IT WORKS (FLOW STYLE) */}
-      <section className="py-20 px-4 md:px-8 text-center relative">
+      <section className="py-14 px-32 text-center relative">
 
         <h2 className="text-3xl md:text-4xl font-bold text-white">
           How it works

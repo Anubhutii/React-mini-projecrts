@@ -1,8 +1,11 @@
 import heroBg from "../../assets/herobg.png";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
-    <section className=" transition-colors duration-300">
+    <section className=" transition-colors duration-300 px-20">
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         
         {/* LEFT SIDE */}
@@ -39,6 +42,7 @@ const Hero = () => {
             
             {/* Get Started */}
             <button
+              onClick={() => navigate("/dashboard")}
               className="
                 relative overflow-hidden rounded-full p-[2px]
                 cursor-pointer transition-transform

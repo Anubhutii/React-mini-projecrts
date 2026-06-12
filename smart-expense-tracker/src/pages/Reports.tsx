@@ -1,17 +1,22 @@
+import DashboardSidebar from "../components/layout/DashboardSidebar";
+
 const Reports = () => {
   return (
-    <div className="space-y-6 transition-all duration-300">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold dark:text-white text-gray-800 tracking-tight">
-          Reports
-        </h1>
-      </div>
-      
-      <div className="p-6 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-gray-200/80 shadow-sm">
-        <p className="text-sm dark:text-gray-400 text-gray-500 font-medium">Monthly Expense Report</p>
-        <p className="dark:text-gray-300 text-gray-600 mt-2">
-          No reports generated for this period yet.
-        </p>
+    <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
+      <DashboardSidebar />
+      <div className="flex-1 px-6 py-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Reports
+          </h1>
+        </div>
+        
+        <div className="p-6 rounded-3xl bg-white/5 border border-white/10 shadow-sm">
+          <p className="text-sm text-white/60 font-medium">Monthly Expense Report</p>
+          <p className="text-white/40 mt-2">
+            No reports generated for this period yet.
+          </p>
+        </div>
       </div>
     </div>
   );
