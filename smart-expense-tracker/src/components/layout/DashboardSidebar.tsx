@@ -48,6 +48,50 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
       .filter(Boolean)
   );
 
+  const getStreak = () => {
+    let streak = 0;
+    const checkDate = new Date();
+    checkDate.setHours(0, 0, 0, 0);
+
+    const todayStr = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+    
+    // Check yesterday
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const yesterdayStr = `${yesterday.getFullYear()}-${yesterday.getMonth()}-${yesterday.getDate()}`;
+
+    let currentCheck = checkDate;
+    
+    // If today is not in activeDates and yesterday is not in activeDates, streak is 0
+    if (!activeDates.has(todayStr) && !activeDates.has(yesterdayStr)) {
+      return 0;
+    }
+
+    // If today is not active but yesterday is, start checking from yesterday
+    if (!activeDates.has(todayStr) && activeDates.has(yesterdayStr)) {
+      currentCheck = yesterday;
+    }
+
+    // Loop backwards and count consecutive active days
+    while (true) {
+      const yr = currentCheck.getFullYear();
+      const mo = currentCheck.getMonth();
+      const dy = currentCheck.getDate();
+      const dateKey = `${yr}-${mo}-${dy}`;
+
+      if (activeDates.has(dateKey)) {
+        streak++;
+        // Move to previous day
+        currentCheck = new Date(yr, mo, dy - 1);
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  };
+
   // Calendar State
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -73,7 +117,7 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Analytics", path: "/analytics" },
-    { name: "Reports", path: "/reports" },
+    { name: "Update Expense", path: "/update_expense" },
   ];
 
   return (
@@ -163,7 +207,10 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
                   onClick={() => {
                     const monthStr = String(month + 1).padStart(2, '0');
                     const dayStr = String(day).padStart(2, '0');
-                    navigate(`/dashboard?date=${year}-${monthStr}-${dayStr}`);
+                    const targetPath = (location.pathname === "/update_expense" || location.pathname === "/dashboard")
+                      ? location.pathname
+                      : "/dashboard";
+                    navigate(`${targetPath}?date=${year}-${monthStr}-${dayStr}`);
                   }}
                   className={`h-6 w-6 flex items-center justify-center rounded-full mx-auto transition-all duration-200 ${
                     isFuture
@@ -185,6 +232,41 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
             })}
           </div>
         </div>
+
+        {/* STREAK WIDGET */}
+        <div className="mt-6 pt-5 border-t border-white/10">
+          <div className={`p-4 rounded-2xl border transition-all duration-300 flex items-center gap-3 ${
+            getStreak() > 0
+              ? "bg-gradient-to-br from-orange-500/10 to-red-500/5 border-orange-500/20 text-orange-400 shadow-[0_4px_20px_rgba(249,115,22,0.05)]"
+              : "bg-white/5 border-white/10 text-white/40"
+          }`}>
+            <span className={`text-2xl transition-transform duration-500 ${getStreak() > 0 ? "animate-bounce" : ""}`}>
+              🔥
+            </span>
+            <div className="text-left font-sans">
+              {getStreak() > 0 ? (
+                <>
+                  <p className="text-xs font-bold text-orange-400">
+                    {getStreak()} Day Streak!
+                  </p>
+                  <p className="text-[10px] text-white/50 mt-0.5 font-medium">
+                    Habit is building. Keep going!
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs font-semibold text-white/60">
+                    No active streak
+                  </p>
+                  <p className="text-[10px] text-white/30 mt-0.5">
+                    Log an expense to start!
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

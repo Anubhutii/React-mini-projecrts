@@ -29,3 +29,21 @@ export const deleteExpense = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ✏️ Update Expense
+export const updateExpense = async (req, res) => {
+  try {
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedExpense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+    res.json(updatedExpense);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

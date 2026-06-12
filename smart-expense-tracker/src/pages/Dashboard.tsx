@@ -162,6 +162,14 @@ const getCategoryColor = (cat: string) => {
     fetchExpenses();
   }, []);
 
+  useEffect(() => {
+    if (dateParam) {
+      setDate(dateParam);
+    } else {
+      setDate(new Date().toISOString().split("T")[0]);
+    }
+  }, [dateParam]);
+
   // ✅ FETCH + GROUP DATA
   const fetchExpenses = async () => {
   try {
@@ -207,7 +215,7 @@ const getCategoryColor = (cat: string) => {
     setCustomSubCategory("");
     setIsCustomSelected(false);
     setNote("");
-    setDate(new Date().toISOString().split("T")[0]);
+    setDate(dateParam || new Date().toISOString().split("T")[0]);
     setOpen(false);
 
     fetchExpenses();

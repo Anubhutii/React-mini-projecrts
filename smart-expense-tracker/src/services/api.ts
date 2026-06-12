@@ -17,3 +17,24 @@ export const addExpense = async (data: { title: string; amount: number; category
   });
   return res.json();
 };
+
+// PUT (Update)
+export const updateExpense = async (id: string, data: { title: string; amount: number; category: string; subCategory: string; date?: string; }) => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+};
+
+// DELETE
+export const deleteExpense = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+  return res.json();
+};
+
