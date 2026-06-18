@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:5000/api/expenses";
+const BASE_URL =
+  "https://expense-tracker-backend-61ru.onrender.com/api/expenses";
 
 const getHeaders = () => {
   const token = localStorage.getItem("token");
