@@ -88,6 +88,7 @@ const Navbar = ({
             transition-all
             duration-300
             
+            dark:bg-[#121218]/95
             bg-white/95
             border-b
             dark:border-white/10
@@ -97,6 +98,7 @@ const Navbar = ({
             md:static
             md:w-auto
             md:bg-transparent
+            md:dark:bg-transparent
             md:flex-row
             md:py-0
             md:border-none
