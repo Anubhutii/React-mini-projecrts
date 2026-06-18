@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getExpenses } from "../services/api";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { FiCalendar } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -33,6 +34,7 @@ const StatCard = ({ title, value, sub, color }: { title: string; value: string; 
 );
 
 const Analytics = () => {
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedDeepDiveCategory, setSelectedDeepDiveCategory] = useState("Food");
 
@@ -292,23 +294,52 @@ const Analytics = () => {
   const mostExpensiveDay = getMostExpensiveDay();
   const topCategoryName = categoryData.length > 0 ? [...categoryData].sort((a, b) => b.value - a.value)[0]?.name : "N/A";
 
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[85vh] px-4 text-center">
+        <div className="max-w-md p-8 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-gray-200 shadow-2xl backdrop-blur-md">
+          <h2 className="text-3xl font-bold dark:text-white text-gray-800 mb-4">
+            Access Locked 🔒
+          </h2>
+          <p className="dark:text-gray-300 text-gray-600 mb-6">
+            Please log in or sign up to view and manage your smart expense dashboard.
+          </p>
+          <p className="text-xs dark:text-gray-400 text-gray-500">
+            Use the <strong>Login</strong> button at the top right of the navigation bar to continue.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
       
       <DashboardSidebar expenses={expenses} />
 
-      <div className="flex-1 px-6 py-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex-1 min-w-0 px-4 py-6 md:px-6 max-w-7xl mx-auto space-y-6">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Analysis Overview</h1>
-            <p className="text-white/50 text-sm mt-0.5">
-              Deep insights into your spending behavior
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
+              className="md:hidden p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition cursor-pointer"
+              title="Open menu"
+            >
+              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">Analysis Overview</h1>
+              <p className="text-white/50 text-xs sm:text-sm mt-0.5">
+                Deep insights into your spending behavior
+              </p>
+            </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 self-start sm:self-auto">
             <button className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white/80">
               <FiCalendar /> {today.toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
             </button>
@@ -316,7 +347,7 @@ const Analytics = () => {
         </div>
 
         {/* TOP STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Spent"
             value={`₹${totalSpent}`}
@@ -344,7 +375,7 @@ const Analytics = () => {
         </div>
 
         {/* CHART ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* Monthly vs Last Month */}
           <Card className="lg:col-span-1 flex flex-col justify-between h-[300px]">
@@ -353,7 +384,7 @@ const Analytics = () => {
               <span className="text-purple-400 text-xs font-semibold">Last 6 Months</span>
             </div>
 
-            <div className="flex-1 w-full mt-2">
+            <div className="flex-1 w-full mt-2 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyComparisonData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
@@ -373,7 +404,7 @@ const Analytics = () => {
               <span className="text-green-400 text-xs font-semibold">This Month</span>
             </div>
 
-            <div className="flex-1 w-full mt-2">
+            <div className="flex-1 w-full mt-2 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={budgetTrendData}>
                   <defs>
@@ -434,16 +465,16 @@ const Analytics = () => {
         </div>
 
         {/* SECOND ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* Category Deep Dive */}
-          <Card className="lg:col-span-2 flex flex-col justify-between h-[300px]">
-            <div className="flex justify-between items-center mb-2">
+          <Card className="md:col-span-2 flex flex-col justify-between h-[300px]">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
               <p className="font-semibold text-sm">Category Deep Dive (Daily Trend)</p>
               <select
                 value={selectedDeepDiveCategory}
                 onChange={(e) => setSelectedDeepDiveCategory(e.target.value)}
-                className="bg-[#0f172a] border border-white/10 px-3 py-1.5 rounded-xl text-xs text-white outline-none cursor-pointer"
+                className="bg-[#0f172a] border border-white/10 px-3 py-1.5 rounded-xl text-xs text-white outline-none cursor-pointer self-start sm:self-auto"
               >
                 {availableCategories.length === 0 ? (
                   <option value="Food">Food</option>
@@ -455,7 +486,7 @@ const Analytics = () => {
               </select>
             </div>
 
-            <div className="flex-1 w-full mt-2">
+            <div className="flex-1 w-full mt-2 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={categoryTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
@@ -500,9 +531,9 @@ const Analytics = () => {
 
         {/* HEATMAP */}
         <Card>
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
             <p className="font-semibold text-sm">Spending Heatmap</p>
-            <div className="flex items-center gap-4 text-[10px] text-white/40">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] text-white/40">
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-white/5 inline-block"/> ₹0</span>
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500/20 inline-block"/> &le; ₹500</span>
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500/40 inline-block"/> &le; ₹1500</span>
@@ -510,20 +541,22 @@ const Analytics = () => {
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500 inline-block"/> &gt; ₹3000</span>
             </div>
           </div>
-          <div className="grid grid-cols-15 sm:grid-cols-30 gap-1.5 py-1 justify-items-center">
-            {heatmapData.map((dayData) => (
-              <div
-                key={dayData.date}
-                className={`w-3.5 h-3.5 rounded-sm transition-all duration-300 ${getHeatmapClass(dayData.amount)}`}
-                title={`${new Date(dayData.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}: ₹${dayData.amount}`}
-              />
-            ))}
+          <div className="w-full overflow-x-auto py-1">
+            <div className="grid grid-cols-15 sm:grid-cols-30 gap-1.5 min-w-[420px] justify-items-center">
+              {heatmapData.map((dayData) => (
+                <div
+                  key={dayData.date}
+                  className={`w-3.5 h-3.5 rounded-sm transition-all duration-300 ${getHeatmapClass(dayData.amount)}`}
+                  title={`${new Date(dayData.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}: ₹${dayData.amount}`}
+                />
+              ))}
+            </div>
           </div>
           <p className="text-[10px] text-white/30 text-right mt-2">Showing last 150 days of logging activity</p>
         </Card>
 
         {/* BOTTOM ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* AI Insights */}
           <Card className="h-[250px] flex flex-col">

@@ -91,7 +91,7 @@ const Features = () => {
       </section>
 
       {/* HOW IT WORKS (FLOW STYLE) */}
-      <section className="py-14 px-32 text-center relative">
+      <section className="py-14 px-6 sm:px-12 md:px-32 text-center relative">
 
         <h2 className="text-3xl md:text-4xl font-bold text-white">
           How it works
@@ -100,7 +100,7 @@ const Features = () => {
         {/* Line */}
         <div className="hidden md:block absolute top-[140px] left-1/2 -translate-x-1/2 w-[80%] h-[2px] bg-gradient-to-r from-cyan-500/20 via-blue-500/40 to-purple-500/20 blur-[1px]" />
 
-        <div className="mt-16 grid md:grid-cols-4 gap-6 relative z-10">
+        <div className="mt-16 grid sm:grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
           {steps.map((s, i) => (
             <div
               key={i}
@@ -124,7 +124,7 @@ const Features = () => {
 
     <section className="py-6">
 
-  <div className="w-full bg-gradient-to-r from-blue-900 via-cyan-800 to-teal-900 px-2 md:px-16 py-12 md:py-16 flex flex-col md:flex-row items-center justify-between gap-10">
+  <div className="w-full bg-gradient-to-r from-blue-900 via-cyan-800 to-teal-900 px-6 sm:px-12 md:px-16 py-12 md:py-16 flex flex-col md:flex-row items-center justify-between gap-10">
 
     {/* LEFT */}
     <div className="max-w-xl">
@@ -141,15 +141,15 @@ const Features = () => {
     <div className="w-full md:w-auto">
 
       {/* Input + Button */}
-      <div className="flex items-center bg-white rounded-full overflow-hidden shadow-lg">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 bg-transparent sm:bg-white rounded-none sm:rounded-full overflow-hidden w-full">
 
         <input
           type="text"
           placeholder="Enter your email or phone number"
-          className="px-5 py-3 w-full md:w-[260px] text-sm text-gray-700 outline-none"
+          className="px-5 py-3 w-full sm:w-[260px] text-sm text-gray-700 outline-none rounded-full sm:rounded-none bg-white sm:bg-transparent shadow-sm sm:shadow-none"
         />
 
-        <button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 py-3 text-sm font-medium transition rounded-full">
+        <button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-6 py-3 text-sm font-medium transition rounded-full whitespace-nowrap shadow-md sm:shadow-none cursor-pointer">
           Get started
         </button>
       </div>

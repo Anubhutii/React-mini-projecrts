@@ -10,8 +10,10 @@ import {
 
 import { getExpenses, addExpense } from "../services/api";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   type Expense = { id?: string; title: string; amount: number; category: string; subCategory?: string; date?: string };
   type CategoryDatum = { name: string; value: number; color?: string };
 
@@ -221,6 +223,24 @@ const getCategoryColor = (cat: string) => {
     fetchExpenses();
   };
 
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[85vh] px-4 text-center">
+        <div className="max-w-md p-8 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-gray-200 shadow-2xl backdrop-blur-md">
+          <h2 className="text-3xl font-bold dark:text-white text-gray-800 mb-4">
+            Access Locked 🔒
+          </h2>
+          <p className="dark:text-gray-300 text-gray-600 mb-6">
+            Please log in or sign up to view and manage your smart expense dashboard.
+          </p>
+          <p className="text-xs dark:text-gray-400 text-gray-500">
+            Use the <strong>Login</strong> button at the top right of the navigation bar to continue.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
@@ -229,28 +249,39 @@ const getCategoryColor = (cat: string) => {
         <DashboardSidebar expenses={expenses} />
 
         {/* MAIN */}
-        <div className="flex-1 px-4 py-4 max-w-6xl mx-auto text-[14px]">
+        <div className="flex-1 min-w-0 px-4 py-4 max-w-6xl mx-auto text-[14px]">
 
           {/* HEADER */}
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-medium tracking-wide text-white">Dashboard</h2>
-                {dateParam && (
-                  <span className="flex items-center gap-1 bg-purple-500/20 text-purple-300 text-[11px] px-2 py-0.5 rounded-full border border-purple-500/30">
-                    📅 {dateParam}
-                    <button
-                      onClick={() => setSearchParams({})}
-                      className="hover:text-white ml-1 font-bold cursor-pointer text-xs"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                )}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
+                className="md:hidden p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition cursor-pointer"
+                title="Open menu"
+              >
+                <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-medium tracking-wide text-white">Dashboard</h2>
+                  {dateParam && (
+                    <span className="flex items-center gap-1 bg-purple-500/20 text-purple-300 text-[11px] px-2 py-0.5 rounded-full border border-purple-500/30">
+                      📅 {dateParam}
+                      <button
+                        onClick={() => setSearchParams({})}
+                        className="hover:text-white ml-1 font-bold cursor-pointer text-xs"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )}
+                </div>
+                <p className="text-white/50 text-xs mt-1">
+                  Welcome back, {user?.name || "User"} 👋
+                </p>
               </div>
-              <p className="text-white/50 text-xs mt-1">
-                Welcome back, User 👋
-              </p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -678,7 +709,7 @@ const getCategoryColor = (cat: string) => {
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
 
     {/* MODAL */}
-    <div className="w-[380px] bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn">
+    <div className="w-full max-w-[380px] mx-4 bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn">
 
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
@@ -843,7 +874,7 @@ const getCategoryColor = (cat: string) => {
       {/* UPDATE BUDGET MODAL */}
       {openBudgetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="w-[380px] bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn">
+          <div className="w-full max-w-[380px] mx-4 bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn">
             {/* HEADER */}
             <div className="flex justify-between items-center mb-4">
               <div>

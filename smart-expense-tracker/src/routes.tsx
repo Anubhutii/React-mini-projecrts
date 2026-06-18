@@ -4,6 +4,7 @@ import Home from "./components/layout/Home";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Update_Expense";
 import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
 import Layout from "./components/layout/Layout";
 
 export const router = createBrowserRouter([
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <Analytics />
+      </Layout>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <Layout>
+        <Login />
       </Layout>
     ),
   },

@@ -5,8 +5,8 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className=" transition-colors duration-300 px-20">
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <section className=" transition-colors duration-300 px-6 sm:px-12 md:px-20 py-12 md:py-24">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
         
         {/* LEFT SIDE */}
         <div className="flex flex-col justify-center">
@@ -104,7 +104,7 @@ const Hero = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="relative w-full h-[420px] md:h-[650px]">
+        <div className="relative w-full h-[320px] sm:h-[450px] md:h-[650px] overflow-hidden md:overflow-visible">
 
           {/* TOP RIGHT FLOATING CARDS */}
           <div className="absolute top-10 right-10 space-y-4 hidden md:block z-10">
@@ -133,7 +133,7 @@ const Hero = () => {
           <div
             className="
               absolute bottom-0 right-0
-              w-[200px] h-[200px]
+              w-[150px] h-[150px] sm:w-[250px] sm:h-[250px]
               md:w-[500px] md:h-[500px]
               bg-gradient-to-tr
               from-cyan-400/30 via-blue-500/20 to-purple-500/30
@@ -147,11 +147,11 @@ const Hero = () => {
             alt="Expense dashboard"
             className="
               absolute bottom-0 right-0
-              w-[700px] mb-14 max-w-none
+              w-[320px] sm:w-[480px] md:w-[700px] mb-14 max-w-none
               translate-y-10
               hover:scale-[1.03]
               transition-all duration-500
-              drop-shadow-[0_40px_120px_rgba(59,130,246,0.35)]
+              drop-shadow-[0_20px_60px_rgba(59,130,246,0.3)] md:drop-shadow-[0_40px_120px_rgba(59,130,246,0.35)]
             "
           />
         </div>

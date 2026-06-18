@@ -35,6 +35,22 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
     }
   }, [expensesProp]);
 
+  useEffect(() => {
+    const handleToggle = () => setMobileOpen(prev => !prev);
+    const handleOpen = () => setMobileOpen(true);
+    const handleClose = () => setMobileOpen(false);
+
+    window.addEventListener("toggle-sidebar", handleToggle);
+    window.addEventListener("open-sidebar", handleOpen);
+    window.addEventListener("close-sidebar", handleClose);
+
+    return () => {
+      window.removeEventListener("toggle-sidebar", handleToggle);
+      window.removeEventListener("open-sidebar", handleOpen);
+      window.removeEventListener("close-sidebar", handleClose);
+    };
+  }, []);
+
   const expenses = expensesProp || localExpenses;
 
   // Build a Set of dates with expenses (format: YYYY-MM-DD local timezone)
@@ -120,29 +136,57 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
     { name: "Update Expense", path: "/update_expense" },
   ];
 
-  return (
-    <div className="w-56 bg-[#0b1220]/80 border-r border-white/10 p-5 flex flex-col justify-between">
-      <div>
-        <h1 className="text-md font-semibold mb-6 text-white">💼 ExpenseAI</h1>
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-        <div className="space-y-2 text-sm">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <button
-                key={item.name}
-                onClick={() => navigate(item.path)}
-                className={`w-full text-left px-3 py-2 rounded-md transition duration-200 cursor-pointer ${
-                  isActive
-                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium shadow-sm"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {item.name}
-              </button>
-            );
-          })}
-        </div>
+  return (
+    <>
+
+      {/* Backdrop for Mobile Drawer */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <div className={`w-64 bg-[#0b1220]/95 md:bg-[#0b1220]/80 border-r border-white/10 px-4 py-5 flex flex-col justify-between
+        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0
+        backdrop-blur-xl md:backdrop-blur-none
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <div className="relative">
+          {/* Close Button inside Drawer on Mobile */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="md:hidden absolute top-2 right-2 w-8 h-8 rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200 cursor-pointer"
+            title="Close Menu"
+          >
+            ✕
+          </button>
+
+          <h1 className="text-md font-semibold mb-6 text-white pt-2 md:pt-0">💼 ExpenseAI</h1>
+
+          <div className="space-y-2 text-sm">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    navigate(item.path);
+                    setMobileOpen(false); // Close sidebar after selecting page
+                  }}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl transition duration-200 text-sm font-medium cursor-pointer ${
+                    isActive
+                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md shadow-purple-500/20"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {item.name}
+                </button>
+              );
+            })}
+          </div>
 
         {/* MINI CALENDAR */}
         <div className="mt-8 pt-6 border-t border-white/10">
@@ -180,7 +224,7 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
 
           <div className="grid grid-cols-7 gap-x-1 gap-y-1 text-center text-xs">
             {Array.from({ length: startDay }).map((_, i) => (
-              <span key={`empty-${i}`} className="h-6 w-6" />
+              <span key={`empty-${i}`} className="h-7 w-7" />
             ))}
             {Array.from({ length: totalDays }).map((_, i) => {
               const day = i + 1;
@@ -212,7 +256,7 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
                       : "/dashboard";
                     navigate(`${targetPath}?date=${year}-${monthStr}-${dayStr}`);
                   }}
-                  className={`h-6 w-6 flex items-center justify-center rounded-full mx-auto transition-all duration-200 ${
+                  className={`h-7 w-7 flex items-center justify-center rounded-full mx-auto transition-all duration-200 ${
                     isFuture
                       ? "text-white/20 pointer-events-none"
                       : isSelected
@@ -269,6 +313,7 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
 
       </div>
     </div>
+  </>
   );
 };
 

@@ -1,7 +1,8 @@
+import { useState } from "react";
 import loginBg from "../../assets/light-bg.png";
 import loginbg2 from "../../assets/dark_bg.png"; 
-
-import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../../context/AuthContext";
 
 interface LoginModalProps {
   open: boolean;
@@ -12,8 +13,49 @@ const LoginModal = ({
   open,
   onClose,
 }: LoginModalProps) => {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login, signup, loginWithGoogle } = useAuth();
 
   if (!open) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        if (!name || !email || !password) {
+          throw new Error("All fields are required");
+        }
+        const registeredUser = await signup(name, email, password);
+        setIsSignUp(false);
+        if (registeredUser && registeredUser.email) {
+          setEmail(registeredUser.email);
+        }
+        setPassword("");
+        setName("");
+        setSuccessMsg("Registration successful! Please enter your password to log in.");
+      } else {
+        if (!email || !password) {
+          throw new Error("Email and password are required");
+        }
+        await login(email, password);
+        onClose();
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "Authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
@@ -172,7 +214,7 @@ const LoginModal = ({
                 mb-3
               "
             >
-              Welcome Back
+              {isSignUp ? "Create Account" : "Welcome Back"}
             </h1>
 
             {/* Subtitle */}
@@ -181,46 +223,51 @@ const LoginModal = ({
                 text-sm
                 dark:text-gray-200
                 text-gray-600
-                mb-5
+                mb-4
               "
             >
-              Continue managing your expenses with ExpenseAI.
+              {isSignUp
+                ? "Start managing your expenses with ExpenseAI."
+                : "Continue managing your expenses with ExpenseAI."}
             </p>
 
+            {/* Error Message */}
+            {errorMsg && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-500 text-xs px-4 py-2 rounded-xl mb-4 text-center">
+                {errorMsg}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {successMsg && (
+              <div className="bg-green-500/10 border border-green-500/30 text-green-500 text-xs px-4 py-2 rounded-xl mb-4 text-center">
+                {successMsg}
+              </div>
+            )}
+
             {/* Google Button */}
-            <button
-              type="button"
-              className="
-                w-[220px]
-                ml-20
-                py-3
-
-                flex
-                items-center
-                justify-center
-                gap-3
-                border
-                dark:border-white/20
-                border-gray-200
-                rounded-xl
-
-                dark:text-white
-                text-gray-800
-                font-medium
-                cursor-pointer
-
-                dark:bg-white/5
-                bg-white
-                dark:hover:bg-white/10
-                hover:bg-gray-100
-
-                transition-all
-                duration-300
-              "
-            >
-              <FcGoogle size={26} />
-              Continue with Google
-            </button>
+            <div className="flex justify-center mb-4">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    try {
+                      setErrorMsg("");
+                      setLoading(true);
+                      await loginWithGoogle(credentialResponse.credential);
+                      onClose();
+                    } catch (err: any) {
+                      setErrorMsg(err.message || "Google Login failed");
+                    } finally {
+                      setLoading(false);
+                    }
+                  }
+                }}
+                onError={() => {
+                  setErrorMsg("Google Sign-In failed. Please try again.");
+                }}
+                shape="pill"
+              />
+            </div>
 
             {/* Divider */}
             <div
@@ -228,23 +275,63 @@ const LoginModal = ({
                 flex
                 items-center
                 gap-4
-                my-6
+                my-4
               "
             >
               <div className="flex-1 h-[1px] dark:bg-white/20 bg-gray-200" />
-              <span className="dark:text-gray-300 text-gray-500 text-sm">
+              <span className="dark:text-gray-300 text-gray-500 text-xs">
                 OR
               </span>
               <div className="flex-1 h-[1px] dark:bg-white/20 bg-gray-200" />
             </div>
 
             {/* Form */}
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
+
+              {/* Name (Only for signup) */}
+              {isSignUp && (
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="
+                    w-full
+
+                    dark:bg-white/5
+                    bg-white
+                    border
+                    dark:border-white/20
+                    border-gray-200
+
+                    rounded-2xl
+
+                    px-5
+                    py-2
+
+                    dark:text-white
+                    text-gray-800
+                    placeholder:text-gray-400
+
+                    outline-none
+
+                    focus:border-purple-400
+                    dark:focus:bg-white/20
+                    focus:bg-white
+
+                    transition-all
+                  "
+                />
+              )}
 
               {/* Email */}
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="
                   w-full
 
@@ -277,6 +364,9 @@ const LoginModal = ({
               <input
                 type="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="
                   w-full
 
@@ -305,47 +395,47 @@ const LoginModal = ({
                 "
               />
 
-              {/* Remember + Forgot */}
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-
-                  text-sm
-                  dark:text-gray-200
-                  text-gray-600
-                "
-              >
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="accent-cyan-400"
-                  />
-                  Remember me
-                </label>
-
-                <button
-                  type="button"
+              {/* Remember + Forgot (Only for login) */}
+              {!isSignUp && (
+                <div
                   className="
-                    dark:hover:text-cyan-300
-                    hover:text-purple-600
-                    transition-all
+                    flex
+                    items-center
+                    justify-between
+
+                    text-xs
+                    dark:text-gray-200
+                    text-gray-600
                   "
                 >
-                  Forgot password?
-                </button>
-              </div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="accent-cyan-400"
+                    />
+                    Remember me
+                  </label>
 
-              {/* Login Button */}
+                  <button
+                    type="button"
+                    className="
+                      dark:hover:text-cyan-300
+                      hover:text-purple-600
+                      transition-all
+                    "
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              {/* Login/Signup Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="
-                  w-[230px]
-                  ml-20
-
+                  w-full
                   py-3
-
                   rounded-2xl
 
                   font-semibold
@@ -357,6 +447,8 @@ const LoginModal = ({
                   to-[#06B6D4]
 
                   hover:scale-[1.02]
+                  disabled:opacity-50
+                  disabled:scale-100
 
                   transition-all
                   duration-300
@@ -364,7 +456,7 @@ const LoginModal = ({
                   shadow-[0_10px_30px_rgba(124,58,237,0.35)]
                 "
               >
-                Login
+                {loading ? "Please wait..." : isSignUp ? "Sign Up" : "Login"}
               </button>
 
             </form>
@@ -375,12 +467,17 @@ const LoginModal = ({
                 text-center
                 dark:text-gray-300
                 text-gray-600
-                mt-8
+                mt-6
                 text-sm
               "
             >
-              Don’t have an account?
+              {isSignUp ? "Already have an account?" : "Don’t have an account?"}
               <span
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setErrorMsg("");
+                  setSuccessMsg("");
+                }}
                 className="
                   ml-2
                   dark:text-cyan-300
@@ -390,7 +487,7 @@ const LoginModal = ({
                   hover:text-purple-500
                 "
               >
-                Sign Up
+                {isSignUp ? "Log In" : "Sign Up"}
               </span>
             </p>
 

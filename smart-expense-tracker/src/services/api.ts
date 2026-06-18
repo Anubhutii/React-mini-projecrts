@@ -1,8 +1,18 @@
 const BASE_URL = "http://localhost:5000/api/expenses";
 
+const getHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
 // GET
 export const getExpenses = async () => {
-  const res = await fetch(BASE_URL);
+  const res = await fetch(BASE_URL, {
+    headers: getHeaders(),
+  });
   return res.json();
 };
 
@@ -10,9 +20,7 @@ export const getExpenses = async () => {
 export const addExpense = async (data: { title: string; amount: number; category: string; subCategory: string; date?: string; }) => {
   const res = await fetch(BASE_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(data),
   });
   return res.json();
@@ -22,9 +30,7 @@ export const addExpense = async (data: { title: string; amount: number; category
 export const updateExpense = async (id: string, data: { title: string; amount: number; category: string; subCategory: string; date?: string; }) => {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(data),
   });
   return res.json();
@@ -34,6 +40,7 @@ export const updateExpense = async (id: string, data: { title: string; amount: n
 export const deleteExpense = async (id: string) => {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
+    headers: getHeaders(),
   });
   return res.json();
 };

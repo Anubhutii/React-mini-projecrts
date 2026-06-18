@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getExpenses, updateExpense, deleteExpense } from "../services/api";
 import { useSearchParams } from "react-router-dom";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
+import { useAuth } from "../context/AuthContext";
 
 type Expense = {
   _id?: string;
@@ -14,6 +15,7 @@ type Expense = {
 };
 
 const UpdateExpense = () => {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const dateParam = searchParams.get("date");
 
@@ -216,28 +218,57 @@ const UpdateExpense = () => {
     setSearchQuery("");
   };
 
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[85vh] px-4 text-center">
+        <div className="max-w-md p-8 rounded-3xl dark:bg-white/5 bg-white border dark:border-white/10 border-gray-200 shadow-2xl backdrop-blur-md">
+          <h2 className="text-3xl font-bold dark:text-white text-gray-800 mb-4">
+            Access Locked 🔒
+          </h2>
+          <p className="dark:text-gray-300 text-gray-600 mb-6">
+            Please log in or sign up to view and manage your smart expense dashboard.
+          </p>
+          <p className="text-xs dark:text-gray-400 text-gray-500">
+            Use the <strong>Login</strong> button at the top right of the navigation bar to continue.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
       {/* SIDEBAR */}
       <DashboardSidebar expenses={expenses} />
 
       {/* MAIN CONTAINER */}
-      <div className="flex-1 px-6 py-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
+      <div className="flex-1 min-w-0 px-4 py-6 md:px-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
         
         {/* HEADER */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
-              Manage Expenses
-            </h1>
-            <p className="text-white/50 text-xs mt-1">
-              Update details or permanently delete your records
-            </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
+              className="md:hidden p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition cursor-pointer"
+              title="Open menu"
+            >
+              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Manage Expenses
+              </h1>
+              <p className="text-white/50 text-xs mt-1">
+                Update details or permanently delete your records
+              </p>
+            </div>
           </div>
         </div>
 
         {/* FILTER CONTROLS */}
-        <div className="p-6 rounded-3xl bg-white/5 border border-white/10 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white/5 border border-white/10 shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
           
           {/* Calendar Date Filter */}
           <div className="flex flex-col space-y-2">
@@ -314,22 +345,22 @@ const UpdateExpense = () => {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+              <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-white/10 text-white/40 font-semibold bg-white/[0.02]">
-                    <th className="py-4 px-6">Expense / Detail</th>
-                    <th className="py-4 px-6">Category</th>
-                    <th className="py-4 px-6">Date</th>
-                    <th className="py-4 px-6">Amount</th>
-                    <th className="py-4 px-6 text-right">Actions</th>
+                    <th className="py-3 px-3 sm:py-4 sm:px-6">Expense / Detail</th>
+                    <th className="py-3 px-3 sm:py-4 sm:px-6 hidden sm:table-cell">Category</th>
+                    <th className="py-3 px-3 sm:py-4 sm:px-6">Date</th>
+                    <th className="py-3 px-3 sm:py-4 sm:px-6">Amount</th>
+                    <th className="py-3 px-3 sm:py-4 sm:px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {filteredExpenses.map((exp) => {
                     const id = exp._id || exp.id;
                     return (
-                      <tr key={id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="py-4 px-6">
+                      <tr key={id} className="hover:bg-white/[0.02] transition-colors text-xs sm:text-sm">
+                        <td className="py-3 px-3 sm:py-4 sm:px-6">
                           <div className="flex items-center gap-3">
                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
                               {getCategoryIcon(exp.category)}
@@ -342,12 +373,12 @@ const UpdateExpense = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getCategoryStyle(exp.category)}`}>
+                        <td className="py-3 px-3 sm:py-4 sm:px-6 hidden sm:table-cell">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${getCategoryStyle(exp.category)}`}>
                             {exp.category}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-white/70">
+                        <td className="py-3 px-3 sm:py-4 sm:px-6 text-white/70">
                           {exp.date
                             ? new Date(exp.date).toLocaleDateString("en-IN", {
                                 day: "numeric",
@@ -356,10 +387,10 @@ const UpdateExpense = () => {
                               })
                             : "N/A"}
                         </td>
-                        <td className="py-4 px-6 font-bold text-white text-base">
+                        <td className="py-3 px-3 sm:py-4 sm:px-6 font-bold text-white text-sm sm:text-base">
                           ₹{exp.amount}
                         </td>
-                        <td className="py-4 px-6 text-right">
+                        <td className="py-3 px-3 sm:py-4 sm:px-6 text-right">
                           <div className="flex justify-end gap-2">
                             {/* Edit Button */}
                             <button
@@ -397,7 +428,7 @@ const UpdateExpense = () => {
       {/* EDIT MODAL */}
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="w-[380px] bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn text-gray-800">
+          <div className="w-full max-w-[380px] mx-4 bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-gray-200 animate-fadeIn text-gray-800">
             
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
