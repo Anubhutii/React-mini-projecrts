@@ -1,4 +1,4 @@
-const AUTH_URL = "http://localhost:5000/api/auth";
+const AUTH_URL = "https://expense-tracker-backend-61ru.onrender.com/api/auth";
 
 export const loginUser = async (email: string, password: string) => {
   const res = await fetch(`${AUTH_URL}/login`, {
