@@ -769,7 +769,12 @@ const getCategoryColor = (cat: string) => {
       <div className="mb-4">
         <input
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === "" || /^\d*\.?\d*$/.test(val)) {
+              setAmount(val);
+            }
+          }}
           autoFocus
           placeholder="₹ Enter amount"
           className="w-full p-3 text-lg font-medium bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"

@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { useAuth } from "../context/AuthContext";
 import { DatePicker, ConfigProvider, theme, Select, Table } from "antd";
+import type { TableProps } from "antd";
 import dayjs from "dayjs";
 
 type Expense = {
@@ -113,11 +114,11 @@ const UpdateExpense = () => {
     }
   };
 
-  const columns = [
+  const columns: TableProps<Expense>["columns"] = [
     {
       title: "Expense / Detail",
       key: "title",
-      render: (_: any, exp: Expense) => (
+      render: (_, exp) => (
         <div className="flex items-center gap-3">
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
             {getCategoryIcon(exp.category)}
@@ -135,7 +136,7 @@ const UpdateExpense = () => {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      responsive: ["sm"] as const,
+      responsive: ["sm"],
       render: (cat: string) => (
         <span
           onClick={() => {
@@ -177,8 +178,8 @@ const UpdateExpense = () => {
     {
       title: "Actions",
       key: "actions",
-      align: "right" as const,
-      render: (_: any, exp: Expense) => {
+      align: "right",
+      render: (_, exp) => {
         const id = exp._id || exp.id;
         return (
           <div className="flex justify-end gap-2">
