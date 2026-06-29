@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -21,11 +21,27 @@ const Navbar = ({
   const [editName, setEditName] = useState("");
   const navigate = useNavigate();
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (user) {
       setEditName(user.name);
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   return (
     <nav
@@ -179,7 +195,7 @@ const Navbar = ({
         {/* Right Side / Auth & Mobile Toggle */}
         <div className="flex items-center gap-4 relative">
           {user ? (
-            <div className="relative">
+            <div ref={dropdownRef} className="relative">
               {/* Profile Icon / Initial Avatar */}
               <button
                 onClick={() => {
@@ -200,7 +216,9 @@ const Navbar = ({
                   font-bold
                   cursor-pointer
                   hover:scale-105
-                  transition-all
+                  hover:ring-4
+                  hover:ring-purple-500/20
+                  transition-all duration-300
                   shadow-[0_4px_12px_rgba(124,58,237,0.3)]
                   select-none
                   outline-none
@@ -216,30 +234,36 @@ const Navbar = ({
                   className="
                     absolute
                     right-0
-                    top-12
+                    top-13
                     w-64
                     rounded-3xl
-                    dark:bg-[#121218]/95
+                    dark:bg-[#0f172a]/95
                     bg-white/95
                     backdrop-blur-xl
                     border
                     dark:border-white/10
                     border-gray-200
-                    shadow-[0_10px_40px_rgba(0,0,0,0.15)]
+                    shadow-[0_20px_50px_rgba(0,0,0,0.3)]
                     p-5
                     z-50
                     flex
                     flex-col
                     gap-4
+                    animate-scaleIn
+                    origin-top-right
                   "
                 >
                   {/* User Profile Details */}
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-12 h-12 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg font-bold">
-                      {user.name.charAt(0).toUpperCase()}
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <div className="relative group cursor-default">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#06B6D4] blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300 animate-pulse" />
+                      <div className="relative w-14 h-14 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#06B6D4] text-white flex items-center justify-center text-xl font-bold shadow-lg">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
                     </div>
+                    
                     {isEditing ? (
-                      <div className="flex flex-col gap-2 mt-2 w-full">
+                      <div className="flex flex-col gap-2 mt-2 w-full animate-fadeIn">
                         <input
                           type="text"
                           value={editName}
@@ -263,7 +287,7 @@ const Navbar = ({
                           placeholder="Edit Name"
                           required
                         />
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex gap-2 justify-center mt-1">
                           <button
                             onClick={async () => {
                               if (editName.trim()) {
@@ -275,7 +299,7 @@ const Navbar = ({
                                 }
                               }
                             }}
-                            className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                            className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
                           >
                             Save
                           </button>
@@ -284,28 +308,28 @@ const Navbar = ({
                               setIsEditing(false);
                               setEditName(user.name);
                             }}
-                            className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                            className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
                           >
                             Cancel
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <>
-                        <h4 className="font-bold text-gray-800 dark:text-white text-base">
+                      <div className="animate-fadeIn flex flex-col items-center">
+                        <h4 className="font-bold text-gray-800 dark:text-white text-base tracking-wide mt-1">
                           {user.name}
                         </h4>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          @{user.email.split("@")[0]}
+                        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-2.5 py-0.5 rounded-full mt-1 border dark:border-white/5 border-gray-200 max-w-[200px] truncate">
+                          {user.email}
                         </span>
-                      </>
+                      </div>
                     )}
                   </div>
 
                   <div className="h-[1px] dark:bg-white/10 bg-gray-200 w-full" />
 
                   {/* Options */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1.5">
                     {!isEditing && (
                       <button
                         onClick={() => setIsEditing(true)}
@@ -313,7 +337,7 @@ const Navbar = ({
                           w-full
                           text-left
                           px-4
-                          py-2
+                          py-2.5
                           rounded-xl
                           text-sm
                           font-medium
@@ -321,13 +345,16 @@ const Navbar = ({
                           text-gray-700
                           dark:hover:bg-white/5
                           hover:bg-gray-100
-                          transition-all
+                          flex
+                          items-center
+                          gap-2
+                          transition-all duration-200
                           cursor-pointer
                           border-none
                           bg-transparent
                         "
                       >
-                        ✏️ Edit Profile
+                        <span>✏️</span> Edit Name
                       </button>
                     )}
 
@@ -340,20 +367,23 @@ const Navbar = ({
                         w-full
                         text-left
                         px-4
-                        py-2
+                        py-2.5
                         rounded-xl
                         text-sm
                         font-medium
                         text-red-500
                         dark:hover:bg-red-500/10
                         hover:bg-red-50
-                        transition-all
+                        flex
+                        items-center
+                        gap-2
+                        transition-all duration-200
                         cursor-pointer
                         border-none
                         bg-transparent
                       "
                     >
-                      🚪 Logout
+                      <span>🚪</span> Log Out
                     </button>
                   </div>
                 </div>

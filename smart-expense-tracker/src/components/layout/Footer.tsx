@@ -47,15 +47,6 @@ const Footer = () => {
             </div>
 
             <div>
-              <h3 className="text-white font-medium mb-4">Company</h3>
-              <ul className="space-y-2">
-                <li className="hover:text-white cursor-pointer">About</li>
-                <li className="hover:text-white cursor-pointer">Careers</li>
-                <li className="hover:text-white cursor-pointer">Contact</li>
-              </ul>
-            </div>
-
-            <div>
               <h3 className="text-white font-medium mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li className="hover:text-white cursor-pointer">Privacy</li>
