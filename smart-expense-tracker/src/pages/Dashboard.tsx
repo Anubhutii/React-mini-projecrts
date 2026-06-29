@@ -11,6 +11,8 @@ import {
 import { getExpenses, addExpense } from "../services/api";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { useAuth } from "../context/AuthContext";
+import { DatePicker, ConfigProvider } from "antd";
+import dayjs from "dayjs";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -862,13 +864,26 @@ const getCategoryColor = (cat: string) => {
 
       {/* DATE */}
       <div className="mb-4">
-        <input
-          type="date"
-          value={date}
-          max={new Date().toISOString().split("T")[0]}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800"
-        />
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: '#3b82f6',
+              borderRadius: 8,
+            },
+          }}
+        >
+          <DatePicker
+            value={date ? dayjs(date) : null}
+            disabledDate={(current) => current && current > dayjs().endOf('day')}
+            onChange={(dateVal) => {
+              const val = dateVal ? dateVal.format("YYYY-MM-DD") : "";
+              setDate(val);
+            }}
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800"
+            format="YYYY-MM-DD"
+            allowClear={false}
+          />
+        </ConfigProvider>
       </div>
 
       {/* NOTE */}
