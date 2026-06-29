@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getExpenses, updateExpense, deleteExpense } from "../services/api";
 import { useSearchParams } from "react-router-dom";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { useAuth } from "../context/AuthContext";
-import { DatePicker, ConfigProvider, theme } from "antd";
+import { DatePicker, ConfigProvider, theme, Select, Table } from "antd";
 import dayjs from "dayjs";
 
 type Expense = {
@@ -57,6 +57,28 @@ const UpdateExpense = () => {
     { label: "Other", icon: "💸" }
   ];
 
+  const dynamicCategories = useMemo(() => {
+    const uniqueNames = new Set<string>();
+    
+    // Add default categories
+    categories.forEach(c => uniqueNames.add(c.label));
+    
+    // Add categories dynamically found in fetched expenses
+    expenses.forEach(exp => {
+      if (exp.category) {
+        uniqueNames.add(exp.category);
+      }
+    });
+
+    return Array.from(uniqueNames).map(catName => {
+      const known = categories.find(c => c.label === catName);
+      return {
+        label: catName,
+        icon: known ? known.icon : "🏷️"
+      };
+    });
+  }, [expenses]);
+
   const subcategoriesMap: Record<string, string[]> = {
     Food: ["Zomato", "Swiggy", "Dining"],
     Travel: ["Ola", "Uber", "Rapido", "Metro", "Bus", "Train", "Flight"],
@@ -90,6 +112,102 @@ const UpdateExpense = () => {
       default: return "bg-gray-500/20 text-gray-400";
     }
   };
+
+  const columns = [
+    {
+      title: "Expense / Detail",
+      key: "title",
+      render: (_: any, exp: Expense) => (
+        <div className="flex items-center gap-3">
+          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
+            {getCategoryIcon(exp.category)}
+          </div>
+          <div>
+            <p className="font-semibold text-white">{exp.title}</p>
+            {exp.subCategory && exp.subCategory !== exp.title && (
+              <p className="text-xs text-white/40 mt-0.5">{exp.subCategory}</p>
+            )}
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      responsive: ["sm"] as const,
+      render: (cat: string) => (
+        <span
+          onClick={() => {
+            setCategoryFilter(cat);
+            setSearchParams(prev => {
+              const next = new URLSearchParams(prev);
+              next.set("category", cat);
+              return next;
+            });
+          }}
+          className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer hover:opacity-80 transition-all ${getCategoryStyle(cat)}`}
+        >
+          {cat}
+        </span>
+      )
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      render: (date?: string) => date
+        ? new Date(date).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+          })
+        : "N/A"
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amt: number) => (
+        <span className="font-bold text-white text-sm sm:text-base">
+          ₹{amt}
+        </span>
+      )
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "right" as const,
+      render: (_: any, exp: Expense) => {
+        const id = exp._id || exp.id;
+        return (
+          <div className="flex justify-end gap-2">
+            {/* Edit Button */}
+            <button
+              onClick={() => handleEditClick(exp)}
+              className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg transition-colors cursor-pointer"
+              title="Edit Expense"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            
+            {/* Delete Button */}
+            <button
+              onClick={() => handleDeleteClick(id)}
+              className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition-colors cursor-pointer"
+              title="Delete Expense"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        );
+      }
+    }
+  ];
 
   useEffect(() => {
     fetchExpenses();
@@ -344,30 +462,36 @@ const UpdateExpense = () => {
           {/* Category Filter */}
           <div className="flex flex-col space-y-2">
             <label className="text-xs font-semibold text-white/60">Category</label>
-            <select
-              value={categoryFilter}
-              onChange={(e) => {
-                const val = e.target.value;
-                setCategoryFilter(val);
-                setSearchParams(prev => {
-                  const next = new URLSearchParams(prev);
-                  if (val && val !== "All") {
-                    next.set("category", val);
-                  } else {
-                    next.delete("category");
-                  }
-                  return next;
-                });
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                token: {
+                  colorPrimary: '#3b82f6',
+                  borderRadius: 12,
+                },
               }}
-              className="w-full p-2.5 bg-[#0e1626] border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-white cursor-pointer"
             >
-              <option value="All">All Categories</option>
-              {categories.map(cat => (
-                <option key={cat.label} value={cat.label}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
+              <Select
+                value={categoryFilter}
+                onChange={(val) => {
+                  setCategoryFilter(val);
+                  setSearchParams(prev => {
+                    const next = new URLSearchParams(prev);
+                    if (val && val !== "All") {
+                      next.set("category", val);
+                    } else {
+                      next.delete("category");
+                    }
+                    return next;
+                  });
+                }}
+                className="w-full h-[41px]"
+                options={[
+                  { value: 'All', label: 'All Categories' },
+                  ...dynamicCategories.map(cat => ({ value: cat.label, label: cat.label }))
+                ]}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Search Query Filter */}
@@ -425,104 +549,53 @@ const UpdateExpense = () => {
                 </div>
               ))}
             </div>
-          ) : filteredExpenses.length === 0 ? (
-            <div className="p-12 text-center text-white/40">
-              <span className="text-3xl block mb-2">🔍</span>
-              No expenses match your filters.
-            </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs sm:text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 text-white/40 font-semibold bg-white/[0.02]">
-                    <th className="py-3 px-3 sm:py-4 sm:px-6">Expense / Detail</th>
-                    <th className="py-3 px-3 sm:py-4 sm:px-6 hidden sm:table-cell">Category</th>
-                    <th className="py-3 px-3 sm:py-4 sm:px-6">Date</th>
-                    <th className="py-3 px-3 sm:py-4 sm:px-6">Amount</th>
-                    <th className="py-3 px-3 sm:py-4 sm:px-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredExpenses.map((exp, index) => {
-                    const id = exp._id || exp.id;
-                    const delay = Math.min(index * 45, 360);
-                    return (
-                      <tr
-                        key={id}
-                        className="hover:bg-white/[0.02] transition-colors text-xs sm:text-sm animate-fadeInUp"
-                        style={{ animationDelay: `${delay}ms` }}
-                      >
-                        <td className="py-3 px-3 sm:py-4 sm:px-6">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
-                              {getCategoryIcon(exp.category)}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-white">{exp.title}</p>
-                              {exp.subCategory && exp.subCategory !== exp.title && (
-                                <p className="text-xs text-white/40 mt-0.5">{exp.subCategory}</p>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 sm:py-4 sm:px-6 hidden sm:table-cell">
-                          <span
-                            onClick={() => {
-                              setCategoryFilter(exp.category);
-                              setSearchParams(prev => {
-                                const next = new URLSearchParams(prev);
-                                next.set("category", exp.category);
-                                return next;
-                              });
-                            }}
-                            className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer hover:opacity-80 transition-all ${getCategoryStyle(exp.category)}`}
-                          >
-                            {exp.category}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 sm:py-4 sm:px-6 text-white/70">
-                          {exp.date
-                            ? new Date(exp.date).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric"
-                              })
-                            : "N/A"}
-                        </td>
-                        <td className="py-3 px-3 sm:py-4 sm:px-6 font-bold text-white text-sm sm:text-base">
-                          ₹{exp.amount}
-                        </td>
-                        <td className="py-3 px-3 sm:py-4 sm:px-6 text-right">
-                          <div className="flex justify-end gap-2">
-                            {/* Edit Button */}
-                            <button
-                              onClick={() => handleEditClick(exp)}
-                              className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg transition-colors cursor-pointer"
-                              title="Edit Expense"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                              </svg>
-                            </button>
-                            
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => handleDeleteClick(id)}
-                              className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition-colors cursor-pointer"
-                              title="Delete Expense"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                token: {
+                  colorPrimary: '#3b82f6',
+                  colorBgContainer: 'transparent',
+                  borderRadius: 12,
+                },
+                components: {
+                  Table: {
+                    headerBg: 'rgba(255, 255, 255, 0.02)',
+                    headerColor: 'rgba(255, 255, 255, 0.4)',
+                    headerBorderRadius: 0,
+                    rowHoverBg: 'rgba(255, 255, 255, 0.02)',
+                    borderColor: 'rgba(255, 255, 255, 0.05)',
+                  }
+                }
+              }}
+            >
+              <Table
+                dataSource={filteredExpenses}
+                columns={columns}
+                rowKey={(record) => record._id || record.id || ''}
+                pagination={false}
+                onRow={(_, index) => {
+                  const delay = index !== undefined ? Math.min(index * 45, 360) : 0;
+                  return {
+                    className: "animate-fadeInUp text-xs sm:text-sm",
+                    style: { animationDelay: `${delay}ms` }
+                  } as React.HTMLAttributes<any>;
+                }}
+                locale={{
+                  emptyText: (
+                    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/30 text-2xl mb-4">
+                        📂
+                      </div>
+                      <h3 className="text-lg font-semibold text-white/80">No expenses found</h3>
+                      <p className="text-sm text-white/40 mt-1 max-w-xs">
+                        No records match your selected date and filters.
+                      </p>
+                    </div>
+                  )
+                }}
+              />
+            </ConfigProvider>
           )}
         </div>
       </div>
@@ -572,7 +645,7 @@ const UpdateExpense = () => {
             <div className="mb-4">
               <p className="text-xs font-semibold text-gray-500 mb-2">Category</p>
               <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
+                {dynamicCategories.map((cat) => (
                   <button
                     type="button"
                     key={cat.label}
