@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   PieChart, LineChart, Line, CartesianGrid, XAxis, YAxis,
   Pie,
@@ -14,6 +14,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   type Expense = { id?: string; title: string; amount: number; category: string; subCategory?: string; date?: string };
   type CategoryDatum = { name: string; value: number; color?: string };
 
@@ -252,7 +253,7 @@ const getCategoryColor = (cat: string) => {
         <div className="flex-1 min-w-0 px-4 py-4 max-w-6xl mx-auto text-[14px]">
 
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 animate-fadeInDown">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
@@ -307,7 +308,7 @@ const getCategoryColor = (cat: string) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
   {/* CARD */}
-  <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1e1b4b] to-[#0f172a] border border-white/10 overflow-hidden">
+  <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#1e1b4b] to-[#0f172a] border border-white/10 overflow-hidden animate-fadeInUp animation-delay-100">
 
   {/* 🔥 CONTENT */}
   <div className="relative z-10">
@@ -361,7 +362,7 @@ const getCategoryColor = (cat: string) => {
 
 </div>
 
-  <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#064e3b] to-[#022c22] border border-white/10 overflow-hidden">
+  <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#064e3b] to-[#022c22] border border-white/10 overflow-hidden animate-fadeInUp animation-delay-200">
 
   {/* CONTENT */}
   <div className="relative z-10">
@@ -415,7 +416,7 @@ const getCategoryColor = (cat: string) => {
 
 </div>
 
- <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#3f1d0f] to-[#1c1917] border border-white/10 overflow-hidden">
+ <div className="relative p-5 rounded-2xl bg-gradient-to-br from-[#3f1d0f] to-[#1c1917] border border-white/10 overflow-hidden animate-fadeInUp animation-delay-300">
 
   {/* CONTENT */}
   <div className="relative z-10">
@@ -474,7 +475,7 @@ const getCategoryColor = (cat: string) => {
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
 
   {/* 🔥 LEFT - RECENT EXPENSES */}
-  <div className="p-4 h-[300px] flex flex-col rounded-xl bg-white/5 border border-white/10">
+  <div className="p-4 h-[300px] flex flex-col rounded-xl bg-white/5 border border-white/10 animate-fadeInUp animation-delay-300">
 
     <div className="flex justify-between items-center mb-2 shrink-0">
       <h3 className="text-sm font-medium">Recent Expenses</h3>
@@ -482,8 +483,14 @@ const getCategoryColor = (cat: string) => {
     </div>
 
     <div className="flex-1 overflow-y-auto pr-1 space-y-3">
-      {displayExpenses.slice(0, 10).map((exp, i) => (
-        <div key={i} className="flex justify-between items-center border-b border-white/5 pb-3 last:border-none">
+      {displayExpenses.slice(0, 10).map((exp, i) => {
+        const itemDelay = Math.min(i * 45, 360);
+        return (
+          <div
+            key={i}
+            className="flex justify-between items-center border-b border-white/5 pb-3 last:border-none animate-fadeInUp"
+            style={{ animationDelay: `${itemDelay}ms` }}
+          >
 
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${getCategoryStyle(exp.category)}`}>
@@ -512,13 +519,14 @@ const getCategoryColor = (cat: string) => {
           </div>
 
         </div>
-      ))}
+      );
+      })}
     </div>
   </div>
 
 
   {/* 🔥 CENTER - SPENDING CHART */}
-  <div className="p-5 h-[300px] rounded-xl bg-white/5 border border-white/10 flex flex-col">
+  <div className="p-5 h-[300px] rounded-xl bg-white/5 border border-white/10 flex flex-col animate-fadeInUp animation-delay-400">
 
     <h3 className="text-sm font-medium mb-3">Spending by Category</h3>
 
@@ -540,9 +548,22 @@ const getCategoryColor = (cat: string) => {
             innerRadius={55}
             outerRadius={85}
             paddingAngle={3}
+            isAnimationActive={true}
+            animationDuration={1200}
+            animationEasing="ease-out"
           >
-            {categoryData.map((_, index) => (
-              <Cell key={index} fill={`url(#grad-${index})`} />
+            {categoryData.map((entry, index) => (
+              <Cell
+                key={index}
+                fill={`url(#grad-${index})`}
+                onClick={() => {
+                  const params: Record<string, string> = { category: entry.name };
+                  if (dateParam) params.date = dateParam;
+                  const queryString = new URLSearchParams(params).toString();
+                  navigate(`/update_expense?${queryString}`);
+                }}
+                style={{ cursor: 'pointer' }}
+              />
             ))}
           </Pie>
 
@@ -563,7 +584,7 @@ const getCategoryColor = (cat: string) => {
 
 
   {/* 🔥 RIGHT - TOP CATEGORIES */}
-  <div className="p-5 h-[300px] rounded-xl bg-white/5 border border-white/10 flex flex-col">
+  <div className="p-5 h-[300px] rounded-xl bg-white/5 border border-white/10 flex flex-col animate-fadeInUp animation-delay-400">
 
     <div className="flex justify-between items-center mb-3">
       <h3 className="text-sm font-medium">Top Categories</h3>
@@ -578,7 +599,16 @@ const getCategoryColor = (cat: string) => {
         const percent = total ? ((value / total) * 100).toFixed(0) : 0;
 
         return (
-          <div key={cat}>
+          <div
+            key={cat}
+            onClick={() => {
+              const params: Record<string, string> = { category: cat };
+              if (dateParam) params.date = dateParam;
+              const queryString = new URLSearchParams(params).toString();
+              navigate(`/update_expense?${queryString}`);
+            }}
+            className="group cursor-pointer hover:bg-white/5 p-1 rounded-xl transition-all duration-200"
+          >
             <div className="flex justify-between text-sm mb-1">
 
               <div className="flex items-center gap-2">
@@ -613,7 +643,7 @@ const getCategoryColor = (cat: string) => {
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
 
   {/* LEFT - TREND */}
-  <div className="lg:col-span-2 p-5 rounded-xl bg-white/5 border border-white/10">
+  <div className="lg:col-span-2 p-5 rounded-xl bg-white/5 border border-white/10 animate-fadeInUp animation-delay-500">
 
     <div className="flex justify-between mb-4">
       <div>
@@ -657,6 +687,9 @@ const getCategoryColor = (cat: string) => {
       strokeWidth={2.5}
       dot={{ r: 4 }}
       activeDot={{ r: 6 }}
+      isAnimationActive={true}
+      animationDuration={1500}
+      animationEasing="ease-in-out"
     />
 
     {/* ✅ TOOLTIP */}
@@ -671,7 +704,7 @@ const getCategoryColor = (cat: string) => {
   </div>
 
   {/* RIGHT */}
-  <div className="flex flex-col gap-5">
+  <div className="flex flex-col gap-5 animate-fadeInUp animation-delay-500">
 
     {/* Budget */}
     <div className="p-5 rounded-xl bg-white/5 border border-white/10">

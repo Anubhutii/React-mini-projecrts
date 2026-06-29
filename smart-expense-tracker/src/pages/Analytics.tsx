@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getExpenses } from "../services/api";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { FiCalendar } from "react-icons/fi";
@@ -25,8 +26,8 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
   </div>
 );
 
-const StatCard = ({ title, value, sub, color }: { title: string; value: string; sub: string; color: string }) => (
-  <div className={`rounded-3xl p-5 border border-white/10 bg-gradient-to-br ${color} transition-all duration-300 hover:scale-[1.02]`}>
+const StatCard = ({ title, value, sub, color, className = "" }: { title: string; value: string; sub: string; color: string; className?: string }) => (
+  <div className={`rounded-3xl p-5 border border-white/10 bg-gradient-to-br ${color} transition-all duration-300 hover:scale-[1.02] ${className}`}>
     <p className="text-sm text-white/60">{title}</p>
     <h2 className="text-2xl font-bold mt-1 text-white">{value}</h2>
     <p className="text-xs text-white/40 mt-1">{sub}</p>
@@ -35,6 +36,9 @@ const StatCard = ({ title, value, sub, color }: { title: string; value: string; 
 
 const Analytics = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedDeepDiveCategory, setSelectedDeepDiveCategory] = useState("Food");
 
@@ -320,7 +324,7 @@ const Analytics = () => {
       <div className="flex-1 min-w-0 px-4 py-6 md:px-6 max-w-7xl mx-auto space-y-6">
 
         {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fadeInDown">
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
@@ -353,24 +357,28 @@ const Analytics = () => {
             value={`₹${totalSpent}`}
             sub="Lifetime cumulative spend"
             color="from-indigo-500/20 to-purple-500/10"
+            className="animate-fadeInUp animation-delay-100"
           />
           <StatCard
             title="Remaining Budget"
             value={`₹${remainingBudget}`}
             sub={`Limit: ₹${budget} this month`}
             color="from-green-500/20 to-emerald-500/10"
+            className="animate-fadeInUp animation-delay-150"
           />
           <StatCard
             title="Avg. Daily Spend"
             value={`₹${avgDailySpend}`}
             sub="Average per active day"
             color="from-orange-500/20 to-yellow-500/10"
+            className="animate-fadeInUp animation-delay-200"
           />
           <StatCard
             title="Transactions"
             value={`${expenses.length}`}
             sub="Total recorded entries"
             color="from-blue-500/20 to-cyan-500/10"
+            className="animate-fadeInUp animation-delay-250"
           />
         </div>
 
@@ -378,7 +386,7 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* Monthly vs Last Month */}
-          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px]">
+          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px] animate-fadeInUp animation-delay-300">
             <div className="flex justify-between items-center mb-2">
               <p className="font-semibold text-sm">Monthly Trend</p>
               <span className="text-purple-400 text-xs font-semibold">Last 6 Months</span>
@@ -391,14 +399,14 @@ const Analytics = () => {
                   <XAxis dataKey="month" tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: "#0f172a", border: "none", borderRadius: "12px", color: "white" }} />
-                  <Bar dataKey="amount" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="amount" fill="#8b5cf6" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </Card>
 
           {/* Budget vs Actual */}
-          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px]">
+          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px] animate-fadeInUp animation-delay-350">
             <div className="flex justify-between items-center mb-2">
               <p className="font-semibold text-sm">Cumulative Budget vs Actual</p>
               <span className="text-green-400 text-xs font-semibold">This Month</span>
@@ -417,7 +425,7 @@ const Analytics = () => {
                   <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#9ca3af", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: "#0f172a", border: "none", borderRadius: "12px", color: "white" }} />
-                  <Area type="monotone" dataKey="Spent" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorSpent)" name="Actual Spent" />
+                  <Area type="monotone" dataKey="Spent" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorSpent)" name="Actual Spent" isAnimationActive={true} animationDuration={1200} animationEasing="ease-out" />
                   <Line type="monotone" dataKey="Budget" stroke="#6b7280" strokeWidth={1} strokeDasharray="5 5" dot={false} name="Ideal Limit" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -425,7 +433,7 @@ const Analytics = () => {
           </Card>
 
           {/* Category Pie */}
-          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px]">
+          <Card className="lg:col-span-1 flex flex-col justify-between h-[300px] animate-fadeInUp animation-delay-400">
             <p className="font-semibold text-sm mb-2">Spending by Category</p>
 
             <div className="flex-1 relative mt-2">
@@ -444,9 +452,22 @@ const Analytics = () => {
                         innerRadius={50}
                         outerRadius={80}
                         paddingAngle={3}
+                        isAnimationActive={true}
+                        animationDuration={1200}
+                        animationEasing="ease-out"
                       >
                         {categoryData.map((entry, index) => (
-                          <Cell key={index} fill={entry.color} />
+                          <Cell
+                            key={index}
+                            fill={entry.color}
+                            onClick={() => {
+                              const params: Record<string, string> = { category: entry.name };
+                              if (dateParam) params.date = dateParam;
+                              const queryString = new URLSearchParams(params).toString();
+                              navigate(`/update_expense?${queryString}`);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          />
                         ))}
                       </Pie>
                       <Tooltip contentStyle={{ background: "#0f172a", border: "none", borderRadius: "12px", color: "white" }} />
@@ -468,7 +489,7 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* Category Deep Dive */}
-          <Card className="md:col-span-2 flex flex-col justify-between h-[300px]">
+          <Card className="md:col-span-2 flex flex-col justify-between h-[300px] animate-fadeInUp animation-delay-450">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
               <p className="font-semibold text-sm">Category Deep Dive (Daily Trend)</p>
               <select
@@ -493,14 +514,14 @@ const Analytics = () => {
                   <XAxis dataKey="date" tick={{ fill: "#9ca3af", fontSize: 9 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#9ca3af", fontSize: 9 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: "#0f172a", border: "none", borderRadius: "12px", color: "white" }} />
-                  <Line type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Amount Spent" />
+                  <Line type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="Amount Spent" isAnimationActive={true} animationDuration={1500} animationEasing="ease-in-out" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </Card>
 
           {/* Sub Category */}
-          <Card className="flex flex-col justify-between h-[300px]">
+          <Card className="flex flex-col justify-between h-[300px] animate-fadeInUp animation-delay-500">
             <p className="font-semibold text-sm mb-3">Top Sub-categories</p>
 
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
@@ -530,7 +551,7 @@ const Analytics = () => {
         </div>
 
         {/* HEATMAP */}
-        <Card>
+        <Card className="animate-fadeInUp animation-delay-500">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
             <p className="font-semibold text-sm">Spending Heatmap</p>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] text-white/40">
@@ -559,7 +580,7 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* AI Insights */}
-          <Card className="h-[250px] flex flex-col">
+          <Card className="h-[250px] flex flex-col animate-fadeInUp animation-delay-500">
             <p className="font-semibold text-sm mb-3">AI Insights</p>
 
             <ul className="flex-1 overflow-y-auto space-y-3 text-xs text-white/70 pr-1">
@@ -572,28 +593,35 @@ const Analytics = () => {
           </Card>
 
           {/* Top Transactions */}
-          <Card className="h-[250px] flex flex-col">
+          <Card className="h-[250px] flex flex-col animate-fadeInUp animation-delay-500">
             <p className="font-semibold text-sm mb-3">Top Transactions</p>
 
             <div className="flex-1 overflow-y-auto space-y-3 text-xs pr-1">
               {topTransactions.length === 0 ? (
                 <div className="text-white/30 text-xs text-center pt-8">No transactions found</div>
               ) : (
-                topTransactions.map((tx) => (
-                  <div key={tx._id || tx.id} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-none">
-                    <div>
-                      <p className="font-medium text-white">{tx.title}</p>
-                      <p className="text-[10px] text-white/40 mt-0.5">{tx.category} • {tx.date ? new Date(tx.date).toLocaleDateString("en-IN") : "N/A"}</p>
+                topTransactions.map((tx, i) => {
+                  const itemDelay = Math.min(i * 45, 360);
+                  return (
+                    <div
+                      key={tx._id || tx.id}
+                      className="flex justify-between items-center border-b border-white/5 pb-2 last:border-none animate-fadeInUp"
+                      style={{ animationDelay: `${itemDelay}ms` }}
+                    >
+                      <div>
+                        <p className="font-medium text-white">{tx.title}</p>
+                        <p className="text-[10px] text-white/40 mt-0.5">{tx.category} • {tx.date ? new Date(tx.date).toLocaleDateString("en-IN") : "N/A"}</p>
+                      </div>
+                      <span className="font-bold text-white text-sm">₹{tx.amount}</span>
                     </div>
-                    <span className="font-bold text-white text-sm">₹{tx.amount}</span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </Card>
 
           {/* Pattern */}
-          <Card className="h-[250px] flex flex-col justify-between">
+          <Card className="h-[250px] flex flex-col justify-between animate-fadeInUp animation-delay-500">
             <p className="font-semibold text-sm mb-3">Spending Pattern</p>
 
             <div className="flex-1 flex flex-col justify-center space-y-3 text-xs text-white/70">
@@ -601,7 +629,17 @@ const Analytics = () => {
                 <span>Most Expensive Day:</span>
                 <span className="font-semibold text-green-400">{mostExpensiveDay}</span>
               </div>
-              <div className="flex justify-between bg-white/[0.02] border border-white/5 p-2.5 rounded-xl">
+              <div
+                onClick={() => {
+                  if (topCategoryName && topCategoryName !== "N/A") {
+                    const params: Record<string, string> = { category: topCategoryName };
+                    if (dateParam) params.date = dateParam;
+                    const queryString = new URLSearchParams(params).toString();
+                    navigate(`/update_expense?${queryString}`);
+                  }
+                }}
+                className="flex justify-between bg-white/[0.02] border border-white/5 p-2.5 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-200"
+              >
                 <span>Top Category:</span>
                 <span className="font-semibold text-green-400">{topCategoryName}</span>
               </div>

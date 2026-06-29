@@ -3,6 +3,8 @@ import { getExpenses, updateExpense, deleteExpense } from "../services/api";
 import { useSearchParams } from "react-router-dom";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import { useAuth } from "../context/AuthContext";
+import { DatePicker, ConfigProvider, theme } from "antd";
+import dayjs from "dayjs";
 
 type Expense = {
   _id?: string;
@@ -18,9 +20,11 @@ const UpdateExpense = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const dateParam = searchParams.get("date");
+  const categoryParam = searchParams.get("category");
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Filter states
   const [dateFilter, setDateFilter] = useState("");
@@ -37,6 +41,11 @@ const UpdateExpense = () => {
   const [editIsCustomSelected, setEditIsCustomSelected] = useState(false);
   const [editNote, setEditNote] = useState("");
   const [editDate, setEditDate] = useState("");
+
+  // Delete Confirmation Modal states
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = [
     { label: "Food", icon: "🍔" },
@@ -90,15 +99,30 @@ const UpdateExpense = () => {
     if (dateParam) {
       setDateFilter(dateParam);
     } else {
-      setDateFilter("");
+      const todayStr = new Date().toISOString().split("T")[0];
+      setDateFilter(todayStr);
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set("date", todayStr);
+        return next;
+      });
     }
   }, [dateParam]);
+
+  useEffect(() => {
+    if (categoryParam) {
+      setCategoryFilter(categoryParam);
+    } else {
+      setCategoryFilter("All");
+    }
+  }, [categoryParam]);
 
   useEffect(() => {
     applyFilters();
   }, [expenses, dateFilter, categoryFilter, searchQuery]);
 
   const fetchExpenses = async () => {
+    setLoading(true);
     try {
       const data = await getExpenses();
       if (Array.isArray(data)) {
@@ -106,16 +130,17 @@ const UpdateExpense = () => {
       }
     } catch (err) {
       console.error("Error fetching expenses:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const applyFilters = () => {
     let temp = [...expenses];
 
-    // Filter by Date
-    if (dateFilter) {
-      temp = temp.filter(exp => exp.date && exp.date.split("T")[0] === dateFilter);
-    }
+    // Filter by Date - always filter by date, defaulting to today's date if empty
+    const activeDate = dateFilter || new Date().toISOString().split("T")[0];
+    temp = temp.filter(exp => exp.date && exp.date.split("T")[0] === activeDate);
 
     // Filter by Category
     if (categoryFilter !== "All") {
@@ -198,22 +223,30 @@ const UpdateExpense = () => {
     }
   };
 
-  const handleDelete = async (id?: string) => {
+  const handleDeleteClick = (id?: string) => {
     if (!id) return;
-    if (window.confirm("Are you sure you want to delete this expense?")) {
-      try {
-        await deleteExpense(id);
-        fetchExpenses();
-      } catch (err) {
-        console.error("Error deleting expense:", err);
-        alert("Failed to delete expense");
-      }
+    setDeleteId(id);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setIsDeleting(true);
+    try {
+      await deleteExpense(deleteId);
+      setDeleteOpen(false);
+      fetchExpenses();
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+      alert("Failed to delete expense");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const clearFilters = () => {
-    setSearchParams({});
-    setDateFilter("");
+    const todayStr = new Date().toISOString().split("T")[0];
+    setSearchParams({ date: todayStr });
     setCategoryFilter("All");
     setSearchQuery("");
   };
@@ -273,20 +306,39 @@ const UpdateExpense = () => {
           {/* Calendar Date Filter */}
           <div className="flex flex-col space-y-2">
             <label className="text-xs font-semibold text-white/60">Filter by Date</label>
-            <input
-              type="date"
-              value={dateFilter}
-              onChange={(e) => {
-                const val = e.target.value;
-                setDateFilter(val);
-                if (val) {
-                  setSearchParams({ date: val });
-                } else {
-                  setSearchParams({});
-                }
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                token: {
+                  colorPrimary: '#3b82f6',
+                  borderRadius: 12,
+                },
               }}
-              className="w-full p-2.5 bg-white/5 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-white cursor-pointer"
-            />
+            >
+              <DatePicker
+                value={dateFilter ? dayjs(dateFilter) : null}
+                onChange={(date) => {
+                  const val = date ? date.format("YYYY-MM-DD") : "";
+                  setDateFilter(val);
+                  setSearchParams(prev => {
+                    const next = new URLSearchParams(prev);
+                    if (val) {
+                      next.set("date", val);
+                    } else {
+                      next.delete("date");
+                    }
+                    return next;
+                  });
+                }}
+                className="w-full h-[41px] rounded-xl text-white"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+                format="YYYY-MM-DD"
+                allowClear={false}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Category Filter */}
@@ -294,7 +346,19 @@ const UpdateExpense = () => {
             <label className="text-xs font-semibold text-white/60">Category</label>
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCategoryFilter(val);
+                setSearchParams(prev => {
+                  const next = new URLSearchParams(prev);
+                  if (val && val !== "All") {
+                    next.set("category", val);
+                  } else {
+                    next.delete("category");
+                  }
+                  return next;
+                });
+              }}
               className="w-full p-2.5 bg-[#0e1626] border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm text-white cursor-pointer"
             >
               <option value="All">All Categories</option>
@@ -338,7 +402,30 @@ const UpdateExpense = () => {
             )}
           </div>
 
-          {filteredExpenses.length === 0 ? (
+          {loading ? (
+            <div className="divide-y divide-white/5 animate-pulse">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="py-4 px-3 sm:px-6 flex items-center justify-between gap-4">
+                  {/* Left: Category Icon & Titles */}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-white/10 shrink-0" />
+                    <div className="space-y-2 flex-1 min-w-0">
+                      <div className="h-4 bg-white/10 rounded-md w-3/4 max-w-[150px]" />
+                      <div className="h-3 bg-white/10 rounded-md w-1/2 max-w-[100px]" />
+                    </div>
+                  </div>
+                  {/* Middle: Category Pill (Desktop only) */}
+                  <div className="hidden sm:block w-20 h-6 bg-white/10 rounded-full" />
+                  {/* Middle: Date */}
+                  <div className="w-20 h-4 bg-white/10 rounded-md shrink-0" />
+                  {/* Right: Amount */}
+                  <div className="w-16 h-5 bg-white/10 rounded-md shrink-0" />
+                  {/* Actions */}
+                  <div className="w-16 h-8 bg-white/10 rounded-lg shrink-0" />
+                </div>
+              ))}
+            </div>
+          ) : filteredExpenses.length === 0 ? (
             <div className="p-12 text-center text-white/40">
               <span className="text-3xl block mb-2">🔍</span>
               No expenses match your filters.
@@ -356,10 +443,15 @@ const UpdateExpense = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {filteredExpenses.map((exp) => {
+                  {filteredExpenses.map((exp, index) => {
                     const id = exp._id || exp.id;
+                    const delay = Math.min(index * 45, 360);
                     return (
-                      <tr key={id} className="hover:bg-white/[0.02] transition-colors text-xs sm:text-sm">
+                      <tr
+                        key={id}
+                        className="hover:bg-white/[0.02] transition-colors text-xs sm:text-sm animate-fadeInUp"
+                        style={{ animationDelay: `${delay}ms` }}
+                      >
                         <td className="py-3 px-3 sm:py-4 sm:px-6">
                           <div className="flex items-center gap-3">
                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
@@ -374,7 +466,17 @@ const UpdateExpense = () => {
                           </div>
                         </td>
                         <td className="py-3 px-3 sm:py-4 sm:px-6 hidden sm:table-cell">
-                          <span className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${getCategoryStyle(exp.category)}`}>
+                          <span
+                            onClick={() => {
+                              setCategoryFilter(exp.category);
+                              setSearchParams(prev => {
+                                const next = new URLSearchParams(prev);
+                                next.set("category", exp.category);
+                                return next;
+                              });
+                            }}
+                            className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer hover:opacity-80 transition-all ${getCategoryStyle(exp.category)}`}
+                          >
                             {exp.category}
                           </span>
                         </td>
@@ -405,7 +507,7 @@ const UpdateExpense = () => {
                             
                             {/* Delete Button */}
                             <button
-                              onClick={() => handleDelete(id)}
+                              onClick={() => handleDeleteClick(id)}
                               className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition-colors cursor-pointer"
                               title="Delete Expense"
                             >
@@ -541,13 +643,26 @@ const UpdateExpense = () => {
             {/* Date picker */}
             <div className="mb-4">
               <p className="text-xs font-semibold text-gray-500 mb-2">Date</p>
-              <input
-                type="date"
-                value={editDate}
-                max={new Date().toISOString().split("T")[0]}
-                onChange={(e) => setEditDate(e.target.value)}
-                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800"
-              />
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorPrimary: '#3b82f6',
+                    borderRadius: 8,
+                  },
+                }}
+              >
+                <DatePicker
+                  value={editDate ? dayjs(editDate) : null}
+                  disabledDate={(current) => current && current > dayjs().endOf('day')}
+                  onChange={(date) => {
+                    const val = date ? date.format("YYYY-MM-DD") : "";
+                    setEditDate(val);
+                  }}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800"
+                  format="YYYY-MM-DD"
+                  allowClear={false}
+                />
+              </ConfigProvider>
             </div>
 
             {/* Note */}
@@ -577,6 +692,56 @@ const UpdateExpense = () => {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {deleteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-[#0e1626] border border-white/10 rounded-2xl p-6 shadow-2xl animate-fadeIn text-white">
+            <div className="flex flex-col items-center text-center space-y-4">
+              {/* Warning Icon Container */}
+              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold">Delete Expense?</h3>
+                <p className="text-sm text-white/60 mt-1">
+                  Are you sure you want to delete this expense? This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex w-full gap-3 pt-2">
+                <button
+                  onClick={() => !isDeleting && setDeleteOpen(false)}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/20 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+                >
+                  {isDeleting ? (
+                    <>
+                      <svg className="animate-spin h-4.5 w-4.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
