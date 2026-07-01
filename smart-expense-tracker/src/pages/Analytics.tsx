@@ -317,15 +317,15 @@ const Analytics = () => {
   }
 
   return (
-    <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
+    <div className="flex min-h-screen min-w-[250px] text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
       
       <DashboardSidebar expenses={expenses} />
 
-      <div className="flex-1 min-w-0 px-4 py-6 md:px-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex-1 w-full min-w-0 px-4 py-6 md:px-6 max-w-7xl mx-auto space-y-6">
 
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fadeInDown">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
               className="md:hidden p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition cursor-pointer"

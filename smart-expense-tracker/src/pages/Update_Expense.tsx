@@ -120,14 +120,29 @@ const UpdateExpense = () => {
       key: "title",
       render: (_, exp) => (
         <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${getCategoryStyle(exp.category)}`}>
+          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0 ${getCategoryStyle(exp.category)}`}>
             {getCategoryIcon(exp.category)}
           </div>
           <div>
             <p className="font-semibold text-white">{exp.title}</p>
-            {exp.subCategory && exp.subCategory !== exp.title && (
-              <p className="text-xs text-white/40 mt-0.5">{exp.subCategory}</p>
-            )}
+            <div className="flex flex-wrap items-center gap-1 mt-0.5 text-[10px] sm:text-xs text-white/45">
+              {exp.subCategory && exp.subCategory !== exp.title && (
+                <>
+                  <span>{exp.subCategory}</span>
+                  <span className="mx-1">•</span>
+                </>
+              )}
+              <span className="sm:hidden">{exp.category}</span>
+              <span className="sm:hidden mx-1">•</span>
+              <span className="sm:hidden">
+                {exp.date
+                  ? new Date(exp.date).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                    })
+                  : "N/A"}
+              </span>
+            </div>
           </div>
         </div>
       )
@@ -157,6 +172,7 @@ const UpdateExpense = () => {
       title: "Date",
       dataIndex: "date",
       key: "date",
+      responsive: ["sm"],
       render: (date?: string) => date
         ? new Date(date).toLocaleDateString("en-IN", {
             day: "numeric",
@@ -389,15 +405,15 @@ const UpdateExpense = () => {
   }
 
   return (
-    <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
+    <div className="flex min-h-screen min-w-[250px] text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
       {/* SIDEBAR */}
       <DashboardSidebar expenses={expenses} />
 
       {/* MAIN CONTAINER */}
-      <div className="flex-1 min-w-0 px-4 py-6 md:px-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
+      <div className="flex-1 w-full min-w-0 px-4 py-6 md:px-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
         
         {/* HEADER */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
@@ -575,6 +591,7 @@ const UpdateExpense = () => {
                 columns={columns}
                 rowKey={(record) => record._id || record.id || ''}
                 pagination={false}
+                scroll={{ x: 'max-content' }}
                 onRow={(_, index) => {
                   const delay = index !== undefined ? Math.min(index * 45, 360) : 0;
                   return {

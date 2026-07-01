@@ -14,6 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div
       className="
         min-h-screen
+        min-w-[250px]
         transition-colors
         duration-300
         dark:bg-gradient-to-br
@@ -24,7 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
       "
     >
       <Navbar onLoginClick={() => setOpenLogin(true)} />
-      <main className="pt-14 ">
+      <main className="pt-14 w-full">
         {children}
       </main>
       <LoginModal

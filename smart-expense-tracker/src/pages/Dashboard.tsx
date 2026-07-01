@@ -246,17 +246,17 @@ const getCategoryColor = (cat: string) => {
 
   return (
     <>
-      <div className="flex min-h-screen text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
+      <div className="flex min-h-screen min-w-[250px] text-white bg-gradient-to-br from-[#0a0f1f] via-[#0b1f2a] to-[#120041]">
 
         {/* SIDEBAR */}
         <DashboardSidebar expenses={expenses} />
 
         {/* MAIN */}
-        <div className="flex-1 min-w-0 px-4 py-4 max-w-6xl mx-auto text-[14px]">
+        <div className="flex-1 w-full min-w-0 px-4 py-4 max-w-6xl mx-auto text-[14px]">
 
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-6 animate-fadeInDown">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 animate-fadeInDown">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 onClick={() => window.dispatchEvent(new Event("open-sidebar"))}
                 className="md:hidden p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition cursor-pointer"
@@ -267,7 +267,7 @@ const getCategoryColor = (cat: string) => {
                 </svg>
               </button>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-lg font-medium tracking-wide text-white">Dashboard</h2>
                   {dateParam && (
                     <span className="flex items-center gap-1 bg-purple-500/20 text-purple-300 text-[11px] px-2 py-0.5 rounded-full border border-purple-500/30">
@@ -287,19 +287,19 @@ const getCategoryColor = (cat: string) => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
               <button
                 onClick={() => {
                   setBudgetInput(budget.toString());
                   setOpenBudgetModal(true);
                 }}
-                className="px-3 h-10 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold transition duration-200 cursor-pointer shadow-md shadow-purple-600/20"
+                className="flex-1 sm:flex-initial px-3 h-10 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold transition duration-200 cursor-pointer shadow-md shadow-purple-600/20"
               >
                 Update Budget
               </button>
               <button
                 onClick={() => setOpen(true)}
-                className="px-3 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-semibold transition duration-200 cursor-pointer shadow-md shadow-blue-500/20"
+                className="flex-1 sm:flex-initial px-3 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-semibold transition duration-200 cursor-pointer shadow-md shadow-blue-500/20"
               >
                 + Add Expense
               </button>
@@ -533,7 +533,7 @@ const getCategoryColor = (cat: string) => {
     <h3 className="text-sm font-medium mb-3">Spending by Category</h3>
 
     <div className="flex-1 relative">
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <defs>
             {categoryData.map((entry, index) => (
