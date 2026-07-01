@@ -5,7 +5,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className=" transition-colors duration-300 px-6 sm:px-12 md:px-20 py-12 md:py-24">
+    <section className=" transition-colors duration-300 px-6 sm:px-12 md:px-20 pt-20 pb-12 md:pt-24 md:pb-24">
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
         
         {/* LEFT SIDE */}
@@ -104,7 +104,7 @@ const Hero = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="relative w-full h-[320px] sm:h-[450px] md:h-[650px] overflow-hidden md:overflow-visible">
+        <div className="hidden md:block relative w-full h-[320px] sm:h-[450px] md:h-[650px] overflow-hidden md:overflow-visible">
 
           {/* TOP RIGHT FLOATING CARDS */}
           <div className="absolute top-10 right-10 space-y-4 hidden md:block z-10">
@@ -141,19 +141,23 @@ const Hero = () => {
             "
           />
 
-          {/* IMAGE (UNCHANGED ✅) */}
-          <img
-            src={heroBg}
-            alt="Expense dashboard"
-            className="
-              absolute bottom-0 right-0
-              w-[320px] sm:w-[480px] md:w-[700px] mb-14 max-w-none
-              translate-y-10
-              hover:scale-[1.03]
-              transition-all duration-500
-              drop-shadow-[0_20px_60px_rgba(59,130,246,0.3)] md:drop-shadow-[0_40px_120px_rgba(59,130,246,0.35)]
-            "
-          />
+          {/* IMAGE CONTAINER WITH FLOAT & HOVER EFFECT */}
+          <div className="animate-float absolute bottom-0 right-0">
+            <img
+              src={heroBg}
+              alt="Expense dashboard"
+              className="
+                w-[320px] sm:w-[480px] md:w-[700px] mb-14 max-w-none
+                translate-y-10
+                hover:scale-[1.05]
+                hover:translate-y-5
+                hover:-rotate-1
+                hover:drop-shadow-[0_40px_100px_rgba(59,130,246,0.5)]
+                transition-all duration-700 ease-out
+                cursor-pointer
+              "
+            />
+          </div>
         </div>
       </div>
     </section>

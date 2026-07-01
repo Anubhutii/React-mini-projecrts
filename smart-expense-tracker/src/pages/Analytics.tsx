@@ -321,7 +321,7 @@ const Analytics = () => {
       
       <DashboardSidebar expenses={expenses} />
 
-      <div className="flex-1 w-full min-w-0 px-4 py-6 md:px-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex-1 w-full min-w-0 px-4 pt-20 pb-6 md:px-6 max-w-7xl mx-auto space-y-6">
 
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fadeInDown">

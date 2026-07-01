@@ -7,7 +7,6 @@ body,
 #root {
   max-width: 100%;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
 }
 
 /* Hide scrollbars globally while preserving scroll functionality */
@@ -110,4 +109,17 @@ body,
 
 .animation-delay-500 {
   animation-delay: 500ms;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }

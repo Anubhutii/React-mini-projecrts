@@ -410,7 +410,7 @@ const UpdateExpense = () => {
       <DashboardSidebar expenses={expenses} />
 
       {/* MAIN CONTAINER */}
-      <div className="flex-1 w-full min-w-0 px-4 py-6 md:px-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
+      <div className="flex-1 w-full min-w-0 px-4 pt-20 pb-6 md:px-6 max-w-6xl mx-auto space-y-6 transition-all duration-300">
         
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

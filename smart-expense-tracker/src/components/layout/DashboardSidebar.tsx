@@ -144,13 +144,13 @@ const DashboardSidebar = ({ expenses: expensesProp }: DashboardSidebarProps) => 
       {/* Backdrop for Mobile Drawer */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
-      <div className={`w-64 bg-[#0b1220]/95 md:bg-[#0b1220]/80 border-r border-white/10 px-4 py-5 flex flex-col justify-between
-        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0
+      <div className={`w-64 bg-[#0b1220]/95 md:bg-[#0b1220]/80 border-r border-white/10 px-4 py-5 md:pt-20 flex flex-col justify-between
+        fixed inset-y-0 left-0 z-[200] md:z-10 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0
         backdrop-blur-xl md:backdrop-blur-none
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
       `}>

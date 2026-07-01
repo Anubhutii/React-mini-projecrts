@@ -252,7 +252,7 @@ const getCategoryColor = (cat: string) => {
         <DashboardSidebar expenses={expenses} />
 
         {/* MAIN */}
-        <div className="flex-1 w-full min-w-0 px-4 py-4 max-w-6xl mx-auto text-[14px]">
+        <div className="flex-1 w-full min-w-0 px-4 pt-20 pb-4 max-w-6xl mx-auto text-[14px]">
 
           {/* HEADER */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 animate-fadeInDown">

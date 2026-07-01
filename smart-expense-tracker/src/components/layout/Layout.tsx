@@ -25,7 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
       "
     >
       <Navbar onLoginClick={() => setOpenLogin(true)} />
-      <main className="pt-14 w-full">
+      <main className="w-full">
         {children}
       </main>
       <LoginModal

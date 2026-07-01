@@ -58,8 +58,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUserName = async (name: string) => {
     const data = await updateProfile(name);
-    setUser({ _id: data._id, name: data.name, email: data.email });
-    localStorage.setItem("user", JSON.stringify({ _id: data._id, name: data.name, email: data.email }));
+    const updatedUser = data?.user || data || {};
+    const newUser = {
+      _id: updatedUser._id || updatedUser.id || user?._id || "",
+      name: updatedUser.name || name,
+      email: updatedUser.email || user?.email || ""
+    };
+    setUser(newUser);
+    localStorage.setItem("user", JSON.stringify(newUser));
   };
 
   const logout = () => {

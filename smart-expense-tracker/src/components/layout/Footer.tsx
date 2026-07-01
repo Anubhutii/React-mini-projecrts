@@ -61,7 +61,7 @@ const Footer = () => {
         <div className="mt-16 border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/50">
 
           <span>
-            © {new Date().getFullYear()} ExpenseAI. All rights reserved.
+            By Anubhuti S. © {new Date().getFullYear()} ExpenseAI. All rights reserved.
           </span>
 
           <div className="flex gap-6">

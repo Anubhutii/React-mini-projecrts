@@ -50,7 +50,7 @@ const Navbar = ({
         top-0
         left-0
         w-full
-        z-50
+        z-[100]
         dark:bg-white/10
         bg-white/60
         border-b
@@ -262,102 +262,20 @@ const Navbar = ({
                       </div>
                     </div>
                     
-                    {isEditing ? (
-                      <div className="flex flex-col gap-2 mt-2 w-full animate-fadeIn">
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="
-                            w-full
-                            px-3
-                            py-1.5
-                            text-sm
-                            rounded-xl
-                            border
-                            dark:border-white/20
-                            border-gray-300
-                            dark:bg-white/5
-                            bg-gray-50
-                            dark:text-white
-                            text-gray-800
-                            outline-none
-                            focus:border-purple-400
-                          "
-                          placeholder="Edit Name"
-                          required
-                        />
-                        <div className="flex gap-2 justify-center mt-1">
-                          <button
-                            onClick={async () => {
-                              if (editName.trim()) {
-                                try {
-                                  await updateUserName(editName.trim());
-                                  setIsEditing(false);
-                                } catch (err) {
-                                  alert("Failed to update name");
-                                }
-                              }
-                            }}
-                            className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => {
-                              setIsEditing(false);
-                              setEditName(user.name);
-                            }}
-                            className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="animate-fadeIn flex flex-col items-center">
-                        <h4 className="font-bold text-gray-800 dark:text-white text-base tracking-wide mt-1">
-                          {user.name}
-                        </h4>
-                        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-2.5 py-0.5 rounded-full mt-1 border dark:border-white/5 border-gray-200 max-w-[200px] truncate">
-                          {user.email}
-                        </span>
-                      </div>
-                    )}
+                    <div className="animate-fadeIn flex flex-col items-center">
+                      <h4 className="font-bold text-gray-800 dark:text-white text-base tracking-wide mt-1">
+                        {user.name}
+                      </h4>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-2.5 py-0.5 rounded-full mt-1 border dark:border-white/5 border-gray-200 max-w-[200px] truncate">
+                        {user.email}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="h-[1px] dark:bg-white/10 bg-gray-200 w-full" />
 
                   {/* Options */}
                   <div className="flex flex-col gap-1.5">
-                    {!isEditing && (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="
-                          w-full
-                          text-left
-                          px-4
-                          py-2.5
-                          rounded-xl
-                          text-sm
-                          font-medium
-                          dark:text-gray-200
-                          text-gray-700
-                          dark:hover:bg-white/5
-                          hover:bg-gray-100
-                          flex
-                          items-center
-                          gap-2
-                          transition-all duration-200
-                          cursor-pointer
-                          border-none
-                          bg-transparent
-                        "
-                      >
-                        <span>✏️</span> Edit Name
-                      </button>
-                    )}
-
                     <button
                       onClick={() => {
                         logout();
