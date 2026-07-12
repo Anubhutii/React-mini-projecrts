@@ -14,20 +14,12 @@ interface NavbarProps {
 const Navbar = ({
   onLoginClick,
 }: NavbarProps) => {
-  const { user, logout, updateUserName } = useAuth();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState("");
   const navigate = useNavigate();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (user) {
-      setEditName(user.name);
-    }
-  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -200,7 +192,6 @@ const Navbar = ({
               <button
                 onClick={() => {
                   setDropdownOpen(!dropdownOpen);
-                  setIsEditing(false);
                 }}
                 className="
                   w-10
