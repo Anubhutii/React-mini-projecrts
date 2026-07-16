@@ -290,18 +290,17 @@ const About = () => {
 </div>
 
             <p className="text-gray-300 leading-8 text-lg mb-6">
-              I'm a passionate Full Stack Developer who enjoys turning ideas
-              into beautiful, responsive, and high-performance web
-              applications. I love creating clean user interfaces while
-              building scalable backend systems using modern technologies.
-            </p>
+  I'm a passionate MERN Stack Developer who loves transforming ideas into
+  modern, responsive, and high-performance web applications. I specialize in
+  building scalable solutions using <span className="text-cyan-400">React.js, TypeScript, Node.js, Express.js, MongoDB, Tailwind CSS</span>, and modern JavaScript, with a strong focus on clean code, intuitive UI/UX, REST APIs. 
+</p>
 
-            <p className="text-gray-400 leading-8 mb-10">
-              My journey started with curiosity about how websites work, and
-              today I build complete applications using React, TypeScript,
-              Node.js, Express, MongoDB, and Tailwind CSS. I'm constantly
-              learning new technologies and enjoy solving real-world problems
-              through code.
+            <p className="text-gray-300 leading-8 mb-10">
+               My journey into web development began with a simple curiosity about how
+  websites are built. Today, I specialize in developing modern MERN stack
+  applications with a strong focus on performance, responsive design, and clean
+  architecture. I’m always exploring new technologies to create better digital
+  experiences.
             </p>
 
             <div className="space-y-8">
@@ -314,7 +313,7 @@ const About = () => {
 
       <div>
         <span className="font-semibold text-white">Name:</span>{" "}
-        <span className="text-gray-400">Anubhuti</span>
+        <span className="text-gray-400">Anubhuti Singh</span>
       </div>
 
       <div>
