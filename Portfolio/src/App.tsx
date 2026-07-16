@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -11,6 +11,8 @@ import Experience from "./pages/Experience";
 import Contact from "./pages/Contact";
 
 const App = () => {
+  const location = useLocation();
+
   return (
     <>
       <Navbar />
@@ -24,7 +26,8 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
       </Routes>
 
-      <Footer />
+      {/* Show Footer only on Home page */}
+      {location.pathname === "/" && <Footer />}
     </>
   );
 };
