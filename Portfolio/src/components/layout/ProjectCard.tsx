@@ -31,7 +31,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ y: -10 }}
-      className="group relative flex flex-col h-full bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:border-cyan-500/30 transition-all duration-500 shadow-2xl"
+      className="group relative flex flex-col h-[480px] bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:border-cyan-500/30 transition-all duration-500 shadow-2xl"
     >
       {/* Glow Effect on Hover */}
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-500 pointer-events-none" />
@@ -77,17 +77,17 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
       </div>
 
       {/* Card Content */}
-      <div className="flex flex-col flex-grow p-6">
-        <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 mb-3">
+      <div className="flex flex-col flex-grow p-5 md:p-6">
+        <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 mb-3">
           {project.title}
         </h3>
 
-        <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
+        <p className="text-slate-400 text-sm leading-relaxed mb-6 h-24 overflow-y-auto pr-2 card-description">
           {project.description}
         </p>
 
         {/* Tech Stack */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6">
           {project.tech.map((techItem, techIndex) => (
             <span
               key={techIndex}

@@ -23,7 +23,62 @@ import expense2 from "../assets/expense/expense2.png";
 import expense3 from "../assets/expense/expense3.png";
 import expense4 from "../assets/expense/expense4.png";
 
+import theme1 from "../assets/Theme/theme1.png";
+import theme2 from "../assets/Theme/theme2.png";
+import theme3 from "../assets/Theme/theme3.png";
+import theme4 from "../assets/Theme/theme4.png";
+
+import palette1 from "../assets/color/palette1.png";
+import palette2 from "../assets/color/palette2.png";
+import palette3 from "../assets/color/palette3.png";
+import palette4 from "../assets/color/palette4.png";
+import palette5 from "../assets/color/palette5.png";
+import palette6 from "../assets/color/palette6.png";
+
 export const projects = [
+
+  {
+  title: "Color Palette Generator",
+  category: "Major Projects",
+  description:
+    "A powerful color palette generator that helps designers create, preview, and copy beautiful color combinations with live previews, responsive design, and an intuitive user experience.",
+  images: [
+    palette1,
+    palette2,
+    palette3,
+    palette4,
+    palette5,
+    palette6,
+  ],
+  tech: [
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "JavaScript",
+  ],
+  github: "https://github.com/Anubhutii/...", // Replace with your GitHub repository
+  live: "https://color-pallate.netlify.app/",
+},
+
+  {
+  title: "Tailwind Theme Switcher",
+  category: "Mini Projects",
+  description:
+    "A modern Tailwind CSS theme switcher that allows users to preview and change website color themes with a responsive interface and smooth visual transitions.",
+  images: [
+    theme1,
+    theme2,
+    theme3,
+    theme4,
+  ],
+  tech: [
+    "React",
+    "Tailwind CSS",
+    "JavaScript",
+  ],
+  github: "https://github.com/Anubhutii/...", // Replace with your repository
+  live: "https://tailwind-css-theme-color.netlify.app/",
+},
   {
   title: "Hangman Game",
   category: "Games",
