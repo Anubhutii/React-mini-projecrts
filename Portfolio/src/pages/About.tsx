@@ -319,38 +319,6 @@ const About = () => {
        10+ Projects
     </motion.div>
 
-{/* Mobile Badge */}
-<motion.div
-  animate={{
-    y: [0, 8, 0],
-  }}
-  transition={{
-    repeat: Infinity,
-    duration: 4,
-  }}
-  className="
-    md:hidden
-    absolute
-    bottom-3
-    right-3
-    bg-[#10162F]/90
-    border border-white/10
-    backdrop-blur-xl
-    rounded-xl
-    px-3 py-2
-    shadow-xl
-    z-30
-  "
->
-  <p className="text-lg font-bold text-cyan-400">
-    10+
-  </p>
-
-  <p className="text-[10px] text-gray-300">
-    Projects
-  </p>
-</motion.div>
-
               </motion.div>
               </motion.div>
 

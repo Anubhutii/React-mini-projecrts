@@ -24,8 +24,8 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
       </Routes>
 
-      {/* Show Footer only on Home page */}
-      {location.pathname === "/" && <Footer />}
+      {/* Crazy Interactive Portfolio Footer */}
+      <Footer />
     </>
   );
 };

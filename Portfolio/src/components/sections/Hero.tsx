@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ParticlesBackground from "../sections/ParticlesBackground";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import resume from "../../assets/Anubhuti-resume .pdf";
 import profile from "../../assets/Anubhuti.jpeg";
@@ -100,12 +100,12 @@ const Hero = () => {
           </p>
 
           <button
-  onClick={() => window.open(resume, "_blank")}
-  className=" mt-6 flex items-center gap-2 rounded-xl bg-blue-500 px-6 py-3 sm:px-7 sm:py-4 font-semibold transition hover:bg-cyan-400 text-sm sm:text-base"
->
-  Preview Resume
-  <Download size={20} />
-</button>
+            onClick={() => window.open(resume, "_blank")}
+            className="mt-6 flex items-center gap-2 rounded-xl bg-blue-500 px-6 py-3 sm:px-7 sm:py-4 font-semibold transition hover:bg-cyan-400 text-sm sm:text-base cursor-pointer"
+          >
+            Preview Resume
+            <Eye size={20} />
+          </button>
         </div>
 
         {/* RIGHT */}

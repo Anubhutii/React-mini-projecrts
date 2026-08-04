@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import resume from "../../assets/Anubhuti-resume .pdf";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -72,14 +72,16 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Resume Button */}
+          {/* Resume Button with Download Arrow (Using the exact same resume PDF as Hero section) */}
           <a
-            href="/resume.pdf"
+            href={resume}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center rounded-full border border-violet-500 px-5 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-violet-600"
+            download="Anubhuti-resume.pdf"
+            className="hidden md:flex items-center gap-2 rounded-full border border-violet-500 px-5 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-violet-600 shadow-md shadow-violet-500/10 group"
           >
-            Resume
+            <span>Resume</span>
+            <Download size={16} className="group-hover:translate-y-0.5 transition-transform duration-300" />
           </a>
 
           {/* Mobile Menu Button */}
@@ -122,18 +124,20 @@ const Navbar = () => {
             </NavLink>
           ))}
           <a
-            href="/resume.pdf"
+            href={resume}
             target="_blank"
             rel="noopener noreferrer"
+            download="Anubhuti-resume.pdf"
             onClick={() => setIsOpen(false)}
             style={{
               transitionDelay: `${navLinks.length * 50}ms`
             }}
-            className={`w-full max-w-xs text-center rounded-full border border-violet-500 px-6 py-3 text-lg font-medium text-white transition-all duration-300 transform hover:bg-violet-600 ${
+            className={`w-full max-w-xs flex items-center justify-center gap-2 rounded-full border border-violet-500 px-6 py-3 text-lg font-medium text-white transition-all duration-300 transform hover:bg-violet-600 ${
               isOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            Resume
+            <span>Resume</span>
+            <Download size={20} />
           </a>
         </nav>
       </div>
