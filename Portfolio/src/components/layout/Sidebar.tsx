@@ -45,7 +45,7 @@ const Sidebar = ({
   onSelect,
 }: SidebarProps) => {
   const renderGroup = (title: string, items: string[]) => (
-    <div className="mb-5">
+    <div className="mb-2">
       <h4 className="text-xs uppercase tracking-[3px] text-slate-500 mb-4">
         {title}
       </h4>

@@ -243,12 +243,65 @@ export const experienceData: ExperienceItem[] = [
   {
     id: 7,
     category: "Certifications",
-    title: "Professional Certifications",
+    title: "",
     subtitle: "Multiple Platforms",
-    duration: "2023 - Present",
+    duration: "2018 - Present",
     description:
-      "Completed multiple certifications in web development, JavaScript, React, and backend technologies to strengthen practical skills.",
+      "",
     certificateImage: "",
     skills: ["React", "JavaScript", "Node.js", "MongoDB", "Git"],
   },
+];
+
+export const certificatesData: CertificationItem[] = [
+  {
+    id: 1,
+    title: "Frontend Developer Internship",
+    issuer: "Navodita Infotech",
+    date: "Sep 2024",
+    image: intern1,
+    skills: ["React", "JavaScript", "HTML5", "CSS3"],
+    description: ""
+  },
+  {
+    id: 2,
+    title: "Web Development",
+    issuer: "Oasis Infobyte",
+    date: "Mar 2024",
+    image: intern2,
+    skills: ["React", "REST API", "Bootstrap"],
+    description: ""
+  },
+  {
+    id: 3,
+    title: "Full Stack MERN Development",
+    issuer: "Web Development Mastery",
+    date: "2024",
+    skills: ["MongoDB", "Express.js", "React", "Node.js"],
+    description: ""
+  },
+  {
+    id: 4,
+    title: "React & Modern UI Architecture",
+    issuer: "Meta / Coursera",
+    date: "2023",
+    skills: ["React", "TypeScript", "Tailwind CSS"],
+    description: ""
+  },
+  {
+    id: 5,
+    title: "JavaScript Algorithms & Logic",
+    issuer: "HackerRank",
+    date: "2023",
+    skills: ["JavaScript", "Problem Solving"],
+    description: ""
+  },
+  {
+    id: 6,
+    title: "Responsive Web Design",
+    issuer: "freeCodeCamp",
+    date: "2023",
+    skills: ["HTML5", "CSS3", "Flexbox"],
+    description: ""
+  }
 ];

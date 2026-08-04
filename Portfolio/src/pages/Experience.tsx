@@ -1,27 +1,12 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Calendar,
-  Building2,
-  Sparkles,
-  Code2,
-  Award,
-  CheckCircle2,
-  GraduationCap,
-  FileText,
-  ExternalLink,
-  FolderGit2,
-  Layers,
-  MapPin,
-  Briefcase,
-  ShieldCheck,
-  BookOpen,
-  Check,
-  CheckCircle,
+  Calendar,Building2,Sparkles,Code2,Award,CheckCircle2,GraduationCap,FileText,ExternalLink,
+  FolderGit2,Layers,MapPin,Briefcase,ShieldCheck,BookOpen,Check,CheckCircle,Eye,X,
 } from "lucide-react";
 
 import Sidebar from "../components/layout/Sidebar";
-import { experienceData } from "../data/experience";
+import { experienceData, certificatesData, type CertificationItem } from "../data/experience";
 
 const Experience = () => {
   const categories = useMemo(
@@ -30,6 +15,7 @@ const Experience = () => {
   );
 
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [previewCert, setPreviewCert] = useState<CertificationItem | null>(null);
 
   const activeItem = useMemo(() => {
     return experienceData.find((item) => item.category === activeCategory);
@@ -53,11 +39,92 @@ const Experience = () => {
     );
   }, [activeItem]);
 
+  const isCertifications = useMemo(() => {
+    return Boolean(activeItem?.category.toLowerCase().includes("certification"));
+  }, [activeItem]);
+
   return (
-    <section className="relative min-h-screen bg-[#050816] overflow-hidden py-16 md:py-24">
+    <section className="relative min-h-screen bg-[#050816] overflow-hidden pt-16 md:pt-22 pb-12 md:pb-16">
       {/* Background Blur Orbs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-cyan-500/10 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-500/10 blur-[180px] pointer-events-none" />
+
+      {/* Certificate Lightbox Modal */}
+      <AnimatePresence>
+        {previewCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setPreviewCert(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative max-w-3xl w-full max-h-[90vh] bg-[#0B1224] border border-cyan-500/30 rounded-3xl p-5 overflow-hidden flex flex-col justify-between shadow-2xl shadow-cyan-500/10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400">
+                    <Award size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                      {previewCert.title}
+                    </h4>
+                    <p className="text-xs text-cyan-400 font-medium">
+                      {previewCert.issuer} • {previewCert.date}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setPreviewCert(null)}
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Modal Certificate View */}
+              <div className="flex-1 overflow-auto no-scrollbar flex items-center justify-center bg-black/60 rounded-2xl p-3 my-4 border border-white/5 min-h-[300px]">
+                {previewCert.image ? (
+                  <img
+                    src={previewCert.image}
+                    alt={previewCert.title}
+                    className="max-h-[65vh] w-auto max-w-full object-contain rounded-xl shadow-2xl"
+                  />
+                ) : (
+                  <div className="w-full max-w-md p-8 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/50 via-slate-950 to-blue-950/50 text-center space-y-4 shadow-2xl">
+                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto">
+                      <Award size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1">
+                        {previewCert.title}
+                      </h3>
+                      <p className="text-sm text-cyan-300 font-semibold">
+                        Issued by {previewCert.issuer}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Issued: {previewCert.date}
+                      </p>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-300 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/30">
+                      <ShieldCheck size={14} className="text-cyan-400" /> Verified Credential
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Centered Heading */}
@@ -66,20 +133,20 @@ const Experience = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-10 md:mb-14"
+          className="text-center mb-5 md:mb-6"
         >
-          <p className="uppercase tracking-[6px] text-cyan-400 text-xs sm:text-sm font-semibold mb-3">
+          <p className="uppercase tracking-[5px] text-cyan-400 text-xs sm:text-sm font-semibold mb-2">
             My Journey
           </p>
 
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-5xl md:text-3xl font-bold text-white tracking-tight">
             Experience &{" "}
             <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 bg-clip-text text-transparent">
               Education
             </span>
           </h2>
 
-          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-base sm:text-lg">
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-base sm:text-lg md:text-sm leading-relaxed">
             Explore my academic qualifications, professional milestones, and technical accomplishments.
           </p>
         </motion.div>
@@ -147,160 +214,244 @@ const Experience = () => {
 
                   {/* Scrollable Content Body */}
                   <div className="flex-1 overflow-y-auto no-scrollbar my-3 space-y-6">
-                    {/* Top Row: Left Overview (7 Cols) | Right Highlights & Details Card (5 Cols - NO IMAGES) */}
-                    <div className="grid lg:grid-cols-12 gap-6 items-stretch pt-2">
-                      {/* Left Side: Overview & Description */}
-                      <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
-                        <div>
-                          <h4 className="text-xs uppercase tracking-[2px] font-bold text-slate-400 flex items-center gap-2 mb-3">
-                            <Sparkles size={14} className="text-cyan-400" />
-                            {isEducation ? "Overview & Academic Journey" : "Role Overview & Impact"}
-                          </h4>
+                    {/* Top Row: Left Overview | Right Highlights & Details Card (ONLY for non-Certifications) */}
+                    {!isCertifications && (
+                      <div className="grid lg:grid-cols-12 gap-6 items-stretch pt-2">
+                        {/* Left Side: Overview & Description */}
+                        <div className={`${isEducation ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col justify-between space-y-4`}>
+                          <div>
+                            <h4 className="text-xs uppercase tracking-[2px] font-bold text-slate-400 flex items-center gap-2 mb-3">
+                              <Sparkles size={14} className="text-cyan-400" />
+                              {isEducation ? "Overview & Academic Journey" : "Overview & Summary"}
+                            </h4>
 
-                          <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                            {activeItem.description}
-                          </p>
+                            <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                              {activeItem.description}
+                            </p>
+
+                            {isInternship && activeItem.certificatePdf && (
+                              <div className="mt-4">
+                                <a
+                                  href={activeItem.certificatePdf}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition-all"
+                                >
+                                  <FileText size={14} className="text-cyan-400" />
+                                  View Internship Certificate (PDF)
+                                  <ExternalLink size={12} />
+                                </a>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Education Highlights / Core Subjects */}
+                          {isEducation && (
+                            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
+                              <h5 className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                                <BookOpen size={14} className="text-cyan-400" />
+                                Key Focus & Domain Areas
+                              </h5>
+                              <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
+                                  <CheckCircle size={14} className="text-cyan-400 shrink-0" />
+                                  <span>Software Engineering</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
+                                  <CheckCircle size={14} className="text-cyan-400 shrink-0" />
+                                  <span>Full Stack Web Architecture</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
+                                  <CheckCircle size={14} className="text-cyan-400 shrink-0" />
+                                  <span>Database Systems & APIs</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
+                                  <CheckCircle size={14} className="text-cyan-400 shrink-0" />
+                                  <span>Responsive UI / UX</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        {/* Education Highlights / Core Subjects */}
+                        {/* Right Side UI: Academic Summary & Verification Card (Shown ONLY for Education) */}
                         {isEducation && (
-                          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
-                            <h5 className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
-                              <BookOpen size={14} className="text-cyan-400" />
-                              Key Focus & Domain Areas
-                            </h5>
-                            <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
-                              <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
-                                <CheckCircle size={14} className="text-cyan-400 shrink-0" />
-                                <span>Software Engineering</span>
+                          <div className="lg:col-span-5 flex flex-col">
+                            <div className="group/right relative w-full h-full min-h-[260px] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-5 flex flex-col justify-between transition-all duration-300 hover:border-cyan-400/40 shadow-xl">
+                              <div>
+                                {/* Card Top Title & Badge */}
+                                <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+                                  <div className="flex items-center gap-2">
+                                    <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                                      <GraduationCap size={18} />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white tracking-tight">
+                                      Academic Summary
+                                    </h4>
+                                  </div>
+
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
+                                    <ShieldCheck size={13} className="text-cyan-400" />
+                                    Verified
+                                  </span>
+                                </div>
+
+                                {/* 2x2 Quick Info Grid */}
+                                <div className="grid grid-cols-2 gap-2.5 mb-4">
+                                  <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                                    <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                                      Type
+                                    </p>
+                                    <p className="text-xs font-bold text-white truncate">
+                                      Degree / Diploma
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                                    <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                                      Timeline
+                                    </p>
+                                    <p className="text-xs font-bold text-cyan-300 truncate">
+                                      {activeItem.duration}
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                                    <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                                      Organization
+                                    </p>
+                                    <p className="text-xs font-bold text-white truncate">
+                                      {activeItem.subtitle}
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                                    <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                                      Skills Count
+                                    </p>
+                                    <p className="text-xs font-bold text-cyan-300 truncate">
+                                      {`${activeItem.skills?.length || 0} Core Skills`}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Highlights List */}
+                                <div className="space-y-2">
+                                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                    Key Takeaways
+                                  </p>
+                                  <ul className="space-y-1.5 text-xs text-slate-300">
+                                    <li className="flex items-start gap-2">
+                                      <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+                                      <span>Rigorous practical & theoretical coursework</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+                                      <span>Collaborative team projects & lab experiments</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+                                      <span>Strong foundations in software & algorithms</span>
+                                    </li>
+                                  </ul>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
-                                <CheckCircle size={14} className="text-cyan-400 shrink-0" />
-                                <span>Full Stack Web Architecture</span>
-                              </div>
-                              <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
-                                <CheckCircle size={14} className="text-cyan-400 shrink-0" />
-                                <span>Database Systems & APIs</span>
-                              </div>
-                              <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
-                                <CheckCircle size={14} className="text-cyan-400 shrink-0" />
-                                <span>Responsive UI / UX</span>
-                              </div>
+
+                              {/* PDF / External Document Button (If available) */}
+                              {(activeItem.degreePdf || activeItem.resultPdf) && (
+                                <div className="pt-3 mt-4 border-t border-white/10">
+                                  <a
+                                    href={activeItem.degreePdf || activeItem.resultPdf}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full flex items-center justify-between p-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition-all group/btn"
+                                  >
+                                    <span className="flex items-center gap-2">
+                                      <FileText size={15} className="text-cyan-400" />
+                                      View Official Document (PDF)
+                                    </span>
+                                    <ExternalLink size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                                  </a>
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
                       </div>
+                    )}
 
-                      {/* Right Side UI: Sleek Metrics, Highlights & Verification Card (NO IMAGES) */}
-                      <div className="lg:col-span-5 flex flex-col">
-                        <div className="group/right relative w-full h-full min-h-[260px] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-5 flex flex-col justify-between transition-all duration-300 hover:border-cyan-400/40 shadow-xl">
-                          <div>
-                            {/* Card Top Title & Badge */}
-                            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-                              <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                                  {isEducation ? (
-                                    <GraduationCap size={18} />
-                                  ) : isInternship ? (
-                                    <Briefcase size={18} />
-                                  ) : (
-                                    <Award size={18} />
-                                  )}
-                                </div>
-                                <h4 className="text-sm font-bold text-white tracking-tight">
-                                  {isEducation ? "Academic Summary" : isInternship ? "Internship Highlights" : "Credential Details"}
-                                </h4>
-                              </div>
-
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
-                                <ShieldCheck size={13} className="text-cyan-400" />
-                                Verified
-                              </span>
+                    {/* CERTIFICATE GALLERY GRID (Only shown when isCertifications is true) */}
+                    {isCertifications && (
+                      <div className="space-y-3">
+                        {/* Gallery Subheader */}
+                        <div className="flex items-center justify-between pb-1.5 border-b border-white/10">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1 rounded-lg bg-cyan-500/10 text-cyan-400">
+                              <Award size={15} />
                             </div>
-
-                            {/* 2x2 Quick Info Grid */}
-                            <div className="grid grid-cols-2 gap-2.5 mb-4">
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                                  Type
-                                </p>
-                                <p className="text-xs font-bold text-white truncate">
-                                  {isEducation ? "Degree / Diploma" : isInternship ? "Professional Intern" : "Certification"}
-                                </p>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                                  Timeline
-                                </p>
-                                <p className="text-xs font-bold text-cyan-300 truncate">
-                                  {activeItem.duration}
-                                </p>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                                  Organization
-                                </p>
-                                <p className="text-xs font-bold text-white truncate">
-                                  {activeItem.subtitle}
-                                </p>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                                  {isInternship ? "Projects" : "Skills Count"}
-                                </p>
-                                <p className="text-xs font-bold text-cyan-300 truncate">
-                                  {isInternship && activeItem.projectsWorkedOn
-                                    ? `${activeItem.projectsWorkedOn.length} Delivered`
-                                    : `${activeItem.skills?.length || 0} Core Skills`}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Highlights List */}
-                            <div className="space-y-2">
-                              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                Key Takeaways
-                              </p>
-                              <ul className="space-y-1.5 text-xs text-slate-300">
-                                <li className="flex items-start gap-2">
-                                  <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
-                                  <span>{isEducation ? "Rigorous practical & theoretical coursework" : "Worked on production-level features and UI flows"}</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                  <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
-                                  <span>{isEducation ? "Collaborative team projects & lab experiments" : "Collaborated using Git, GitHub, & modern tools"}</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                  <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
-                                  <span>{isEducation ? "Strong foundations in software & algorithms" : "Optimized application performance & responsive design"}</span>
-                                </li>
-                              </ul>
-                            </div>
+                            <h4 className="text-xs font-bold text-white tracking-tight">
+                              Verified Certificates & Badges
+                            </h4>
                           </div>
+                          <span className="text-[10px] font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                            {certificatesData.length} Certificates
+                          </span>
+                        </div>
 
-                          {/* PDF / External Document Button (If available) */}
-                          {(activeItem.certificatePdf || activeItem.degreePdf || activeItem.resultPdf) && (
-                            <div className="pt-3 mt-4 border-t border-white/10">
-                              <a
-                                href={activeItem.certificatePdf || activeItem.degreePdf || activeItem.resultPdf}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition-all group/btn"
-                              >
-                                <span className="flex items-center gap-2">
-                                  <FileText size={15} className="text-cyan-400" />
-                                  View Official Document (PDF)
+                        {/* 3-Column Compact Certificate Gallery Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {certificatesData.map((cert) => (
+                            <div
+                              key={cert.id}
+                              onClick={() => setPreviewCert(cert)}
+                              className="group/certCard relative rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl overflow-hidden hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                            >
+                              {/* Compact Certificate Image or Styled Graphic Card Preview */}
+                              <div className="relative h-28 sm:h-32 w-full bg-slate-950 overflow-hidden flex items-center justify-center border-b border-white/10">
+                                {cert.image ? (
+                                  <img
+                                    src={cert.image}
+                                    alt={cert.title}
+                                    className="w-full h-full object-cover object-top group-hover/certCard:scale-105 transition-transform duration-500"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full p-2.5 flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/40 via-slate-950 to-blue-950/40 text-center relative overflow-hidden group-hover/certCard:scale-105 transition-transform duration-500">
+                                    <div className="absolute -top-8 -right-8 w-20 h-20 bg-cyan-500/10 rounded-full blur-lg pointer-events-none" />
+                                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-1">
+                                      <Award size={16} />
+                                    </div>
+                                    <h6 className="text-[11px] font-bold text-white line-clamp-1 px-1">
+                                      {cert.title}
+                                    </h6>
+                                    <span className="text-[9px] text-cyan-300/80 font-medium">
+                                      {cert.issuer}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* Hover Glass Overlay */}
+                                <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover/certCard:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold text-[11px] shadow-lg backdrop-blur-md">
+                                    <Eye size={13} /> Expand
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Card Footer Details: Compact One-Liner Detail */}
+                              <div className="p-2 px-2.5 bg-white/[0.02] flex items-center justify-between">
+                                <p className="text-[11px] font-bold text-white truncate group-hover/certCard:text-cyan-300 transition-colors">
+                                  {cert.title} <span className="text-[10px] text-slate-400 font-normal ml-0.5">• {cert.issuer}</span>
+                                </p>
+
+                                <span className="text-[9px] font-semibold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20 shrink-0 ml-1.5">
+                                  {cert.date}
                                 </span>
-                                <ExternalLink size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
-                              </a>
+                              </div>
                             </div>
-                          )}
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* INTERNSHIP PROJECTS SECTION (3 Cards: Name, 3 Bullet Points, Tech Stack) */}
                     {isInternship && activeItem.projectsWorkedOn && activeItem.projectsWorkedOn.length > 0 && (
@@ -344,19 +495,6 @@ const Experience = () => {
                                 </ul>
                               </div>
 
-                              {/* Tech Stack Badges */}
-                              {project.tech && project.tech.length > 0 && (
-                                <div className="pt-3 mt-3 border-t border-white/10 flex flex-wrap gap-1.5">
-                                  {project.tech.map((tItem, tIdx) => (
-                                    <span
-                                      key={tIdx}
-                                      className="text-[10px] font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20"
-                                    >
-                                      {tItem}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
                             </div>
                           ))}
                         </div>
@@ -364,7 +502,7 @@ const Experience = () => {
                     )}
 
                     {/* Skills & Technologies Applied */}
-                    {activeItem.skills && activeItem.skills.length > 0 && (
+                    {!isCertifications && activeItem.skills && activeItem.skills.length > 0 && (
                       <div className="pt-4 border-t border-white/10">
                         <h4 className="text-xs uppercase tracking-[2px] font-bold text-slate-400 flex items-center gap-2 mb-3">
                           <Code2 size={14} className="text-cyan-400" />

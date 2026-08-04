@@ -42,18 +42,18 @@ const Projects = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <p className="text-cyan-400 uppercase tracking-[6px] text-xs md:text-sm mb-3">
+          <p className="text-cyan-400 uppercase tracking-[5px] text-xs md:text-sm mb-3">
             My Work
           </p>
 
-          <h2 className="text-4xl md:text-6xl font-bold text-white">
+          <h2 className="text-4xl md:text-4xl font-bold text-white">
             Featured{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Projects
             </span>
           </h2>
 
-          <p className="text-slate-400 mt-4 md:mt-6 max-w-2xl mx-auto text-base md:text-lg">
+          <p className="text-slate-400 mt-4 md:mt-4 max-w-2xl mx-auto text-base md:text-md">
             Here are some projects I've built using modern technologies,
             focusing on beautiful UI, performance, and scalable architecture.
           </p>
