@@ -1,9 +1,4 @@
-import galgotiasImg from "../assets/Galgotias.jpg";
-import polytechnicImg from "../assets/polytechnic.jpg";
-import guCertificateImg from "../assets/gu-certificate.jpeg";
-import guResultImg from "../assets/gu-result.jpeg";
-import polyResultImg from "../assets/poly-result.jpeg";
-import polyCertificateImg from "../assets/poly-certificate.jpeg";
+
 
 import intern1 from "../assets/internship-1.jpeg";
 import intern2 from "../assets/internship-2.jpeg";
@@ -57,10 +52,6 @@ export const experienceData: ExperienceItem[] = [
     location: "Greater Noida, India",
     description:
       "Completed my B.Tech in Computer Science & Engineering while transforming my passion for technology into practical expertise. During these years, I specialized in MERN Stack development, built responsive and scalable web applications, strengthened my problem-solving abilities, and developed a solid understanding of modern software development practices.",
-    image: galgotiasImg,
-    universityImage: galgotiasImg,
-    degreeImage: guCertificateImg,
-    resultImage: guResultImg,
     skills: [
   "React",
   "Next.js",
@@ -90,9 +81,6 @@ export const experienceData: ExperienceItem[] = [
     description:
   "Earned a Diploma in Computer Science while strengthening my knowledge of programming, web development, and database systems. The program provided practical experience in building responsive web pages and established the technical foundation for my career as a MERN Stack Developer.",
     image: "",
-    universityImage: polytechnicImg,
-    degreeImage: polyCertificateImg,
-    resultImage: polyResultImg,
     skills: [
   "HTML5",
   "CSS3",
