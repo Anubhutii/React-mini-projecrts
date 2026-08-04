@@ -65,9 +65,21 @@ const Experience = () => {
 
   return (
     <section className="relative min-h-screen bg-[#050816] overflow-hidden pt-16 md:pt-22 pb-12 md:pb-16">
-      {/* Background Blur Orbs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-cyan-500/10 blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-500/10 blur-[180px] pointer-events-none" />
+      {/* 3D Abstract Papercut Education & Experience Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 pointer-events-none mix-blend-luminosity scale-105 transition-all duration-700"
+        style={{ backgroundImage: "url('/papercut_exp_bg.jpg')" }}
+      />
+
+      {/* Dark Vignette Overlay for Crisp Readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#050816]/90 via-[#050816]/75 to-[#050816]/95 pointer-events-none" />
+
+      {/* Paper-Cut Ambient Neon Lighting Bleeds */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-cyan-500/15 blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-violet-600/15 blur-[180px] pointer-events-none" />
+
+      {/* Dotted Paper Grid Texture Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(#22d3ee12_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none" />
 
       {/* Certificate Lightbox Modal */}
       <AnimatePresence>

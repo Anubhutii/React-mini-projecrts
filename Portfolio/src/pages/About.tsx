@@ -114,10 +114,15 @@ const About = () => {
   };
 
   return (
-    <section className="relative overflow-hidden min-h-screen bg-[#070B1E] text-white py-12 md:py-24 px-6">
-      {/* Background Blur */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[180px]" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 blur-[180px]" />
+    <section className="relative overflow-hidden min-h-screen bg-[#050816] text-white py-12 md:py-24 px-6">
+      {/* Premium Futuristic Space HUD Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35 pointer-events-none transition-all duration-700"
+        style={{ backgroundImage: "url('/about_space_bg.jpg')" }}
+      />
+
+      {/* Subtle Vignette Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#050816]/75 via-[#050816]/50 to-[#050816]/80 pointer-events-none" />
 
       {/* Interactive Email Modal */}
       <AnimatePresence>
